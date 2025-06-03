@@ -1,0 +1,92 @@
+@font-face {
+  font-family: "iconfont";
+  src: url('/static/fonts/iconfont.woff2') format('woff2'),
+       url('/static/fonts/iconfont.woff') format('woff'),
+       url('/static/fonts/iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: inherit;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// 图标代码
+.icon-search:before {
+  content: "\e61c";
+}
+
+.icon-notice:before {
+  content: "\e626";
+}
+
+.icon-message:before {
+  content: "\e61c";
+}
+
+.icon-waybill:before {
+  content: "\e626";
+}
+
+.icon-verify:before {
+  content: "\e654";
+}
+
+.icon-cargo:before {
+  content: "\e73c";
+}
+
+.icon-user:before {
+  content: "\e7ae";
+}
+
+.icon-arrow-right:before {
+  content: "\e743";
+}
+
+// 用户中心图标
+.icon-shipper:before {
+  content: "\e761";
+  color:#23a7f0;
+}
+
+.icon-driver:before {
+  content: "\e7a5";
+  color:#fd4443
+}
+
+.icon-order:before {
+  content: "\e671";
+  color:#18cd26
+}
+
+.icon-service:before {
+  content: "\e607";
+  color: #ee92ed
+}
+
+.icon-about:before {
+  content: "\e612";
+  color: #9ab617;
+}
+
+.icon-ad:before {
+  content: "\e611";
+  color: #a6b62f
+}
+
+// 新增图标
+.icon-empty:before {
+  content: "\e6a6";
+  color: #c8c9cc;
+}
+
+.icon-add:before {
+  content: "\e6b9";
+}
+
+.icon-info:before {
+  content: "\e6e5";
+} 

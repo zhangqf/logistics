@@ -1,0 +1,79 @@
+{
+  "id": "4934378",
+  "name": "driver",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "23761440",
+      "name": "货主信息",
+      "font_class": "huozhuxinxi",
+      "unicode": "e761",
+      "unicode_decimal": 59233
+    },
+    {
+      "icon_id": "27546505",
+      "name": "在线客服",
+      "font_class": "zaixiankefu",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "33753638",
+      "name": "访客车辆进出记录",
+      "font_class": "fangkecheliangjinchujilu",
+      "unicode": "e671",
+      "unicode_decimal": 58993
+    },
+    {
+      "icon_id": "37288892",
+      "name": "实名认证",
+      "font_class": "shimingrenzheng",
+      "unicode": "e654",
+      "unicode_decimal": 58964
+    },
+    {
+      "icon_id": "37890245",
+      "name": "进销存物流-运单信息",
+      "font_class": "jinxiaocunwuliu-yundanxinxi",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "1323278",
+      "name": "广告流量",
+      "font_class": "liuliangquan",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "3242788",
+      "name": "货源广场 2",
+      "font_class": "huoyuanguangchang",
+      "unicode": "e73c",
+      "unicode_decimal": 59196
+    },
+    {
+      "icon_id": "5431180",
+      "name": "消息通知",
+      "font_class": "xiaoxitongzhi",
+      "unicode": "e61c",
+      "unicode_decimal": 58908
+    },
+    {
+      "icon_id": "16220408",
+      "name": "关于我们",
+      "font_class": "guanyuwomen",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "16778983",
+      "name": "车辆信息",
+      "font_class": "cheliangxinxi",
+      "unicode": "e7a5",
+      "unicode_decimal": 59301
+    }
+  ]
+}

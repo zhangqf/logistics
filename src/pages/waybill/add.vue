@@ -252,6 +252,7 @@ const handleSubmit = async () => {
 
 	.input {
 		width: 100%;
+		box-sizing: border-box;
 		height: 80rpx;
 		background: $bg-color;
 		border-radius: $radius-sm;
@@ -262,6 +263,7 @@ const handleSubmit = async () => {
 	.textarea {
 		width: 100%;
 		height: 200rpx;
+		box-sizing: border-box;
 		background: $bg-color;
 		border-radius: $radius-sm;
 		padding: $spacing-md;

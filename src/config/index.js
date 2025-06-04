@@ -1,8 +1,8 @@
 // 环境配置
 const ENV = {
     development: {
-        apiBaseUrl: 'http://192.168.12.7:7000', // 开发环境API地址
-		// apiBaseUrl: 'https://bm705jd40744.vicp.fun',
+        // apiBaseUrl: 'http://192.168.12.7:7000', // 开发环境API地址
+		apiBaseUrl: 'https://bm705jd40744.vicp.fun/',
         websocketUrl: 'ws://dev-api.example.com', // 开发环境WebSocket地址
     },
     production: {

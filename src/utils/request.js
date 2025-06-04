@@ -138,6 +138,8 @@ const request = (options) => {
 					if (data.selfErrorCode === 0) {
 						resolve(data)
 					} else {
+						console.log(data)
+						console.log('hahhahhahah')
 						// 其他业务错误
 						uni.showToast({
 							title: data.message || '请求失败',
@@ -172,41 +174,6 @@ const request = (options) => {
 		// 发起请求
 		uni.request(requestOptions)
 	})
-}
-
-// 请求方法封装
-const http = {
-	get(url, params = {}) {
-		return request({
-			url,
-			method: 'GET',
-			data: params
-		})
-	},
-	
-	post(url, data = {}) {
-		return request({
-			url,
-			method: 'POST',
-			data
-		})
-	},
-	
-	put(url, data = {}) {
-		return request({
-			url,
-			method: 'PUT',
-			data
-		})
-	},
-	
-	delete(url, data = {}) {
-		return request({
-			url,
-			method: 'DELETE',
-			data
-		})
-	}
 }
 
 export default request  

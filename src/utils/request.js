@@ -103,26 +103,46 @@ const request = (options) => {
 						const retryRes = await request(options)
 						resolve(retryRes)
 					} catch (error) {
+						console.log(error)
+						console.log('catch')
 						isRefreshing = false
-						// 刷新token失败，清除本地token并跳转到登录页
+						
+						// 添加调试日志
+						console.log('准备清除存储...')
+						console.log('当前token:', uni.getStorageSync('token'))
+						console.log('当前refreshToken:', uni.getStorageSync('refreshToken'))
+						console.log('当前userInfo:', uni.getStorageSync('userInfo'))
+						
+						// 清除本地token
 						uni.removeStorageSync('token')
 						uni.removeStorageSync('refreshToken')
 						uni.removeStorageSync('userInfo')
+						
+						// 验证是否清除成功
+						console.log('清除后token:', uni.getStorageSync('token'))
+						console.log('清除后refreshToken:', uni.getStorageSync('refreshToken'))
+						console.log('清除后userInfo:', uni.getStorageSync('userInfo'))
+						
 						// Store current page path for redirect after login
 						const pages = getCurrentPages()
 						const currentPage = pages[pages.length - 1]
 						if (currentPage) {
 							const currentPath = `/${currentPage.route}`
+							console.log('当前页面路径:', currentPath)
 							// Don't store the login page itself
 							if (!currentPath.includes('/pages/login/')) {
 								uni.setStorageSync('loginRedirectPath', currentPath)
+								console.log('已保存重定向路径:', currentPath)
 							}
 						}
+						
 						uni.showToast({
 							title: '请重新登录',
 							icon: 'none'
 						})
+						
 						setTimeout(() => {
+							console.log('准备跳转到登录页...')
 							uni.reLaunch({
 								url: '/pages/login/index'
 							})

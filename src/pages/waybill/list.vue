@@ -12,8 +12,6 @@
 
 				<view class="route-info">
 					<text class="company">{{item.sender_company}}</text>
-					<!-- <text class="arrow">→</text> -->
-					<!-- icon-danjiantou -->
 					<text class="iconfont function-icon">&#xe676;</text>
 					<text class="company">{{item.receiver_company}}</text>
 				</view>

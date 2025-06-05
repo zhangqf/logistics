@@ -59,7 +59,7 @@ const userStore = useUserStore()
 const handleFunctionTap = async (type) => {
 	console.log('Function clicked:', type)
 	if(type === 'verify') {
-		userStore.fetchGetUserInfo()
+		await userStore.fetchGetUserInfo()
 		uni.navigateTo({
 			url:'/pages/verify/verify'
 		})

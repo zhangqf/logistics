@@ -26,6 +26,12 @@
 			}
 		},
 		{
+			"path": "pages/waybill/detail",
+			"style": {
+				"navigationBarTitleText": "运单详情"
+			}
+		},
+		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "登录"

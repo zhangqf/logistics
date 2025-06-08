@@ -69,6 +69,9 @@ const handleFunctionTap = async (type) => {
 // 处理添加货主
 const handleAddCargo = () => {
 	console.log('Add cargo owner clicked')
+	uni.navigateTo({
+		url:'/pages/map/map'
+	})
 }
 </script>
 

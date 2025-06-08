@@ -72,6 +72,20 @@
 			"style": {
 				"navigationBarTitleText": "添加司机"
 			}
+		},
+		{
+			"path" : "pages/map/map",
+			"style" : 
+			{
+				"navigationBarTitleText" : "地图"
+			}
+		},
+		{
+			"path" : "pages/weighnote/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "磅单"
+			}
 		}
 	],
 	"globalStyle": {

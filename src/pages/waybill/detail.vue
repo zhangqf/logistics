@@ -14,22 +14,30 @@
 			</view>
 			<view class="info-item">
 				<text class="label">预载重量</text>
-				<input class="uni-input input" type="number" placeholder="请输入预载重量" v-model="waybillDetail.plan_weight" />
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" type="number"
+					placeholder="请输入预载重量" v-model="waybillDetail.preload_weight" />
+				<text v-else class="value">{{waybillDetail.preload_weight}}</text>
 				<text style="margin-left:20rpx;"> 吨</text>
 			</view>
 			<view class="info-item">
-				<text class="label">派车人</text>
-				<input class="uni-input input" placeholder="请输入派车人" v-model="waybillDetail.dispatcher_name" />
+				<text class="label required">派车人</text>
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入派车人"
+					v-model="waybillDetail.dispatcher" />
+				<text v-else class="value">{{waybillDetail.dispatcher}}</text>
 			</view>
 			<view class="info-item">
-				<text class="label">装货地点</text>
-				<!-- <text class="value">{{waybillDetail.loading_location}}</text> -->
-				<input class="uni-input input" placeholder="请输入装货地点" v-model="waybillDetail.loading_location" />
+				<text class="label required">装货地点</text>
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入装货地点"
+					v-model="waybillDetail.loading_place" />
+				<text v-else class="value">{{waybillDetail.loading_place}}</text>
 			</view>
 			<view class="info-item">
-				<text class="label">收货地址</text>
-				<!-- <text class="value">{{waybillDetail.delivery_address}}</text> -->
-				<input class="uni-input input" placeholder="请输入收货地址" v-model="waybillDetail.delivery_address" />
+				<text class="label required">收货地址</text>
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入收货地址"
+					v-model="waybillDetail.delivery_address" />
+				<text v-else class="value">{{waybillDetail.delivery_address}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">派车时间</text>
@@ -53,27 +61,31 @@
 			</view>
 			<view class="info-item">
 				<text class="label">联系人</text>
-				<!-- <text class="value">{{waybillDetail.sender_contact}}</text> -->
-				<input class="uni-input input" placeholder="请输入联系人" v-model="waybillDetail.sender_contact" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入联系人"
+					v-model="waybillDetail.sender_contact" />
+				<text v-else class="value">{{waybillDetail.sender_contact}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">联系电话</text>
-				<!-- <text class="value">{{waybillDetail.sender_phone}}</text> -->
-				<input class="uni-input input" placeholder="请输入联系电话" v-model="waybillDetailsender_phone" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入联系电话"
+					v-model="waybillDetail.sender_phone" />
+				<text v-else class="value">{{waybillDetail.sender_phone}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">装货仓库</text>
-				<!-- <text class="value">{{waybillDetail.loading_warehouse}}</text> -->
-				<input class="uni-input input" placeholder="请输入装货仓库" v-model="waybillDetailloading_warehouse" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入装货仓库"
+					v-model="waybillDetail.loading_warehouse" />
+				<text v-else class="value">{{waybillDetail.loading_warehouse}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">装货要求</text>
-				<!-- <text class="value">{{waybillDetail.loading_requirements}}</text> -->
-				<input class="uni-input input" placeholder="请输入装货要求" v-model="waybillDetail.loading_requirements" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入装货要求"
+					v-model="waybillDetail.loading_requirements" />
+				<text v-else class="value">{{waybillDetail.loading_requirements}}</text>
 			</view>
 		</view>
 
@@ -93,27 +105,31 @@
 			</view>
 			<view class="info-item">
 				<text class="label">联系人</text>
-				<!-- <text class="value">{{waybillDetail.receiver_contact}}</text> -->
-				<input class="uni-input input" placeholder="请输入联系人" v-model="waybillDetail.receiver_contact" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入联系人"
+					v-model="waybillDetail.receiver_contact" />
+				<text v-else class="value">{{waybillDetail.receiver_contact}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">联系电话</text>
-				<!-- <text class="value">{{waybillDetail.receiver_phone}}</text> -->
-				<input class="uni-input input" placeholder="请输入联系电话" v-model="waybillDetail.receiver_phone" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入联系电话"
+					v-model="waybillDetail.receiver_phone" />
+				<text v-else class="value">{{waybillDetail.receiver_phone}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">卸载仓库</text>
-				<!-- <text class="value">{{waybillDetail.unloading_warehouse}}</text> -->
-				<input class="uni-input input" placeholder="请输入卸载仓库" v-model="waybillDetail.unloading_warehouse" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入卸载仓库"
+					v-model="waybillDetail.unloading_warehouse" />
+				<text v-else class="value">{{waybillDetail.unloading_warehouse}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">卸载要求</text>
-				<!-- <text class="value">{{waybillDetail.unloading_requirements}}</text> -->
-				<input class="uni-input input" placeholder="请输入卸载要求" v-model="waybillDetail.unloading_requirements" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入卸载要求"
+					v-model="waybillDetail.unloading_requirements" />
+				<text v-else class="value">{{waybillDetail.unloading_requirements}}</text>
 			</view>
 		</view>
 
@@ -123,54 +139,74 @@
 				<text class="iconfont">&#xe676;</text>
 				<text>承运信息</text>
 			</view>
-			<view class="info-item">
+			<!-- <view class="info-item">
 				<text class="label">承运商</text>
 				<text class="value">{{waybillDetail.carrier_name}}</text>
-				<input class="uni-input input" placeholder="请输入卸载要求" v-model="waybillDetail.unloading_requirements" />
+				<input class="uni-input input" placeholder="请输入承运商" v-model="waybillDetail.carrier_name" />
 				
-			</view>
+			</view> -->
 			<view class="info-item">
 				<text class="label">车牌号</text>
-				<text class="value">{{waybillDetail.plate_number}}</text>
+				<text class="value">{{waybillDetail?.assignee_info?.driver_license_plate}}</text>
 				<!-- <input class="uni-input input" placeholder="请输入卸载要求" v-model="waybillDetail.unloading_requirements" /> -->
-				
+
 			</view>
 			<view class="info-item">
 				<text class="label">卸货方式</text>
-				<text class="value">{{waybillDetail.unloading_method}}</text>
-				<input class="uni-input input" placeholder="请输入卸货方式" v-model="waybillDetail.unloading_method" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入卸货方式"
+					v-model="waybillDetail.carrier" />
+				<text v-else class="value">{{waybillDetail.carrier}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">货箱类型</text>
-				<!-- <text class="value">{{waybillDetail.container_type}}</text> -->
-				<input class="uni-input input" placeholder="请输入货箱类型" v-model="waybillDetail.container_type" />
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入货箱类型"
+					v-model="waybillDetail.vehicle_type" />
+				<text v-else class="value">{{waybillDetail.vehicle_type}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">货箱长度</text>
-				<!-- <text class="value">{{waybillDetail.container_length}}米</text> -->
-				<input class="uni-input input" placeholder="请输入货箱长度" v-model="waybillDetail.container_length" /> 米
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入货箱长度"
+					v-model="waybillDetail.vehicle_length" />
+				<text v-else class="value">{{waybillDetail.vehicle_length}}</text> 米
 			</view>
 			<view class="info-item">
 				<text class="label">车辆轴数</text>
-				<!-- <text class="value">{{waybillDetail.vehicle_axles}}轴</text> -->
-				<input class="uni-input input" placeholder="请输入车辆轴数" v-model="waybillDetail.vehicle_axles" /> 轴
-				
+
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入车辆轴数"
+					v-model="waybillDetail.axle_count" />
+				<text v-else class="value">{{waybillDetail.axle_count}}</text> 轴
+			</view>
+			<view class="info-item">
+				<text class="label">出发时间</text>
+
+				<!-- <input class="uni-input input" placeholder="请输入出发时间" v-model="waybillDetail.factory_entry_time" /> 米 -->
+				<uni-datetime-picker v-if="waybillDetail.status==='assigned'" type="datetime"
+					v-model="waybillDetail.factory_entry_time" return-type='date' />
+				<text v-else class="value">{{formatDate(waybillDetail.factory_entry_time)}}</text>
+			</view>
+			<view class="info-item">
+				<text class="label">到达时间</text>
+
+				<!-- <input class="uni-input input" placeholder="请输入到达时间" v-model="waybillDetail.factory_exit_time" /> 米 -->
+				<uni-datetime-picker v-if="waybillDetail.status==='assigned'" style="width: 100%; height: 80rpx;"
+					type="datetime" return-type='date' v-model="waybillDetail.factory_exit_time" />
+				<text v-else class="value">{{formatDate(waybillDetail.factory_exit_time)}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">司机姓名</text>
-				<text class="value">{{waybillDetail.driver_name}}</text>
-				
+				<text class="value">{{waybillDetail.assignee_info.driver_name}}</text>
+
 			</view>
 			<view class="info-item">
 				<text class="label">手机号</text>
-				<text class="value">{{waybillDetail.driver_phone}}</text>
+				<text class="value">{{waybillDetail.assignee_info.phone}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">身份证号</text>
-				<text class="value">{{waybillDetail.driver_id_number}}</text>
+				<text class="value">{{waybillDetail.assignee_info.id_card}}</text>
 			</view>
 		</view>
 
@@ -181,7 +217,7 @@
 				<template v-if="waybillDetail.status === 'assigned'">
 					<button class="primary-btn" @tap="handleAudit">审核</button>
 				</template>
-				<template v-else>
+				<template v-if="waybillDetail.status === 'approved' || waybillDetail.status === 'completed'">
 					<button class="primary-btn" @tap="handleDownloadWeighNote">下载电子磅单</button>
 					<button class="secondary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
@@ -206,14 +242,16 @@
 <script setup>
 	import {
 		ref,
-		onMounted
+		onMounted,
+		toRaw
 	} from 'vue'
 	import {
 		useUserStore
 	} from '@/stores/user'
 	import {
 		getWaybillDetail,
-		approveWaybill
+		approveWaybill,
+		aubmitAudit
 	} from '@/api/waybills'
 	import {
 		formatDate
@@ -250,19 +288,51 @@
 			uni.hideLoading()
 		}
 	}
-
+	const getvalidate = () => {
+		// 表单验证
+		if (!waybillDetail.value.dispatcher) {
+			uni.showToast({
+				title: '请输入派车人',
+				icon: 'none'
+			})
+			return false
+		}
+		if (!waybillDetail.value.loading_place) {
+			uni.showToast({
+				title: '请输入装货地址',
+				icon: 'none'
+			})
+			return false
+		}
+		if (!waybillDetail.value.delivery_address) {
+			uni.showToast({
+				title: '请输入收货地址',
+				icon: 'none'
+			})
+			return false
+		}
+		return true
+	}
 	// 司机 - 提交审核
 	const handleAudit = () => {
+		if (!getvalidate()) {
+			return
+		}
 		uni.showModal({
 			title: '提示',
 			content: '确认提交审核？',
 			success: async (res) => {
+				const tempObj = JSON.parse(JSON.stringify(toRaw(waybillDetail.value)))
+				console.log(waybillDetail.value)
+				tempObj.waybill_id = tempObj.waybill
+				delete tempObj.waybill
+				console.log(tempObj)
 				if (res.confirm) {
 					try {
 						uni.showLoading({
 							title: '提交中...'
 						})
-						const res = await submitAudit(waybillDetail.value.id)
+						const res = await aubmitAudit(tempObj)
 						if (res.selfErrorCode === 0) {
 							uni.showToast({
 								title: '提交成功',
@@ -319,32 +389,35 @@
 	// 查看轨迹
 	const handleViewTrack = () => {
 		uni.navigateTo({
-			url: `/pages/waybill/track?id=${waybillDetail.value.id}`
-		})
+			url: `/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.factory_entry_time)}&arrivalTime=${formatDate(waybillDetail.value.factory_exit_time)}`
+		}) 
 	}
 
 	// 生成磅单
 	const handleGenerateWeighNote = async () => {
-		try {
-			uni.showLoading({
-				title: '生成中...'
-			})
-			const res = await generateWeighNote(waybillDetail.value.id)
-			if (res.selfErrorCode === 0) {
-				uni.showToast({
-					title: '生成成功',
-					icon: 'success'
-				})
-				getDetail(waybillDetail.value.id)
-			}
-		} catch (error) {
-			uni.showToast({
-				title: '生成失败',
-				icon: 'none'
-			})
-		} finally {
-			uni.hideLoading()
-		}
+		uni.navigateTo({
+			url:`/pages/weighnote/index?data=${JSON.stringify(toRaw(waybillDetail.value))}`
+		})
+		// try {
+		// 	uni.showLoading({
+		// 		title: '生成中...'
+		// 	})
+		// 	const res = await generateWeighNote(waybillDetail.value.id)
+		// 	if (res.selfErrorCode === 0) {
+		// 		uni.showToast({
+		// 			title: '生成成功',
+		// 			icon: 'success'
+		// 		})
+		// 		getDetail(waybillDetail.value.id)
+		// 	}
+		// } catch (error) {
+		// 	uni.showToast({
+		// 		title: '生成失败',
+		// 		icon: 'none'
+		// 	})
+		// } finally {
+		// 	uni.hideLoading()
+		// }
 	}
 
 	// 通过审核
@@ -448,6 +521,7 @@
 			display: flex;
 			margin-bottom: 16rpx;
 			align-items: center;
+
 			&:last-child {
 				margin-bottom: 0;
 			}
@@ -457,13 +531,22 @@
 				font-size: 28rpx;
 				color: #999999;
 				flex-shrink: 0;
+
+				&.required::before {
+					content: '*';
+					color: $danger-color;
+					margin-right: 4rpx;
+				}
 			}
 
 			.value {
 				flex: 1;
 				font-size: 28rpx;
 				color: #333333;
+				height: 80rpx;
+				line-height: 80rpx;
 			}
+
 			.input {
 				width: 100%;
 				box-sizing: border-box;
@@ -473,7 +556,7 @@
 				padding: 0 $spacing-md;
 				font-size: $font-size-md;
 			}
-			
+
 			.textarea-value {
 				width: 100%;
 				height: 200rpx;
@@ -486,7 +569,7 @@
 		}
 	}
 
-	
+
 
 	.bottom-buttons {
 		position: fixed;
@@ -499,7 +582,8 @@
 		display: flex;
 		justify-content: space-between;
 		box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.05);
-		z-index: 1000;
+		z-index: 1;
+
 		button {
 			flex: 1;
 			height: 80rpx;

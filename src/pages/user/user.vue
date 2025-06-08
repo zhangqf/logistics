@@ -5,7 +5,7 @@
 			<view class="user-info" v-if="isLogin">
 				<image class="avatar" :src="userInfo.avatarUrl || '/static/images/default-avatar.png'" mode="aspectFill"></image>
 				<view class="info">
-					<text class="nickname">{{userInfo.nickName || '未设置昵称'}}</text>
+					<text class="nickname">{{userInfo.auth_info.real_name || '未设置昵称'}}</text>
 					<text class="phone">{{userInfo.phone || '未绑定手机号'}}</text>
 				</view>
 			</view>

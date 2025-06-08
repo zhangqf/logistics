@@ -168,26 +168,9 @@ export const useUserStore = defineStore('user', {
 				const res = await getUserInfo()
 				console.log(res)
 				if(res.selfErrorCode === 0) {
-					await this.updateUserInfo(res.data)
+					await this.updateUserInfo(res.data.data)
 					return true
 				}
-				// if (res.data.selfErrorCode === 0) {
-				// 	const {
-				// 		token,
-				// 		refreshToken
-				// 	} = res.data.data
-
-				// 	// 更新token
-				// 	this.token = token
-				// 	this.refreshToken = refreshToken
-
-				// 	// 持久化存储
-				// 	uni.setStorageSync('token', token)
-				// 	uni.setStorageSync('refreshToken', refreshToken)
-
-				// 	return true
-				// }
-
 				throw new Error(res.data.message || '获取用户信息失败')
 			} catch (error) {
 				//TODO handle the exception

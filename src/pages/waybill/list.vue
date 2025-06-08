@@ -18,8 +18,8 @@
 
 				<view class="bottom-info">
 					<text class="create-time">{{formatDate(item.issue_time)}}</text>
-					
-					<button class="assign-btn" @tap.stop="showDriverSelect(item)" :disabled="item.status !== 'created'">
+
+					<button v-if="userRole!=='driver'" class="assign-btn" @tap.stop="showDriverSelect(item)" :disabled="item.status !== 'created'">
 						分配
 					</button>
 				</view>
@@ -32,7 +32,7 @@
 		</scroll-view>
 
 		<!-- 添加按钮 -->
-		<view class="add-btn" @tap="goToAdd">
+		<view v-if="userRole!=='driver'" class="add-btn" @tap="goToAdd">
 			<text class="iconfont">&#xe6da;</text>
 		</view>
 
@@ -82,12 +82,19 @@
 	import {
 		useDirvers
 	} from '@/composables/driver.js'
-	
-	
+	import {
+		useUserStore
+	} from '@/stores/user'
+
+
 	const {
 		getDriverList,
 		drivers
 	} = useDirvers();
+
+	const userStore = useUserStore()
+	
+	const userRole = ref(userStore.userInfo?.role || '')
 
 	// 状态映射
 	const statusMap = {
@@ -118,8 +125,10 @@
 
 	// 显示运单详情
 	const showDetail = (waybill) => {
+		console.log(waybill.detail_info.id)
+		console.log('waybill')
 		uni.navigateTo({
-			url: `/pages/waybill/detail?id=${waybill.id}`
+			url: `/pages/waybill/detail?id=${waybill.detail_info.id}`
 		})
 	}
 
@@ -127,7 +136,7 @@
 	const fetchWaybillList = async (isRefresh = false) => {
 		try {
 			uni.showLoading({
-				title:'获取运单列表'
+				title: '获取运单列表'
 			})
 			const res = await getWaybills()
 			waybillList.value = res.data
@@ -179,9 +188,9 @@
 				mask: true
 			})
 			const res = await assignWaybills({
-					waybill_id: currentWaybill.value.id,
-					driver_id: selectedDriver.value.u_id
-				})
+				waybill_id: currentWaybill.value.id,
+				driver_id: selectedDriver.value.u_id
+			})
 			// const res = await uni.request({
 			// 	url: `${config.apiBaseUrl}/api/waybill/assign`,
 			// 	method: 'POST',
@@ -190,15 +199,15 @@
 			// 		driverId: selectedDriver.value.id
 			// 	}
 			// })
-			
+
 
 			// if (res.statusCode === 200 && res.data.code === 0) {
 			// 	uni.showToast({
 			// 		title: '分配成功',
 			// 		icon: 'success'
 			// 	})
-				closeDriverPopup()
-				fetchWaybillList(true)
+			closeDriverPopup()
+			fetchWaybillList(true)
 			// } else {
 			// 	throw new Error(res.data.message || '分配失败')
 			// }
@@ -305,9 +314,8 @@
 		.iconfont {
 			font-size: 80rpx;
 			color: $primary-color;
-			margin: 0 20rpx
-			// width: 180rpx;
-			// height: 110rpx;
+			margin: 0 20rpx // width: 180rpx;
+				// height: 110rpx;
 		}
 
 		.arrow {
@@ -319,7 +327,7 @@
 
 	.bottom-info {
 		display: flex;
-		justify-content: space-between; 
+		justify-content: space-between;
 		align-items: center;
 
 		.create-time {
@@ -338,6 +346,7 @@
 			min-width: 100rpx;
 			text-align: center;
 			margin: 0;
+
 			&[disabled] {
 				opacity: 0.5;
 				background: #CCCCCC;

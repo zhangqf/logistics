@@ -20,9 +20,13 @@ export function assignWaybills(data) {
 }
 
 // 提交审核
-
-export function aubmitAudit() {
+export function aubmitAudit(data) {
 	console.log("submitAudit")
+	return request({
+		url:`/api/waybill-details/${data.id}/`,
+		method: 'put',
+		data
+	})
 }
 
 // 获取运单信息
@@ -30,9 +34,8 @@ export function aubmitAudit() {
 export function getWaybillDetail(id) {
 	console.log('getWaybillDetail')
 	return request({
-		url:`api/waybill-details/`,
+		url:`/api/waybill-details/${id}`,
 		method:'get',
-		params:id
 	})
 }
 

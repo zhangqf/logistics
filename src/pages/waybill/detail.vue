@@ -224,15 +224,15 @@
 			</template>
 
 			<!-- 管理员角色 -->
-			<template v-if="userRole === 'admin' && waybillDetail.status === 'auditing'">
-				<template v-if="!waybillDetail.weigh_note">
+			<template v-if="userRole === 'admin'">
+				<template v-if="waybillDetail.status === 'auditing'">
 					<button class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
 					<button class="secondary-btn" @tap="handleGenerateWeighNote">生成磅单</button>
 				</template>
 				<template v-else>
 					<button class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
 					<button class="secondary-btn" @tap="handleViewWeighNote">查看磅单</button>
-					<button class="success-btn" @tap="handleApproveAudit">通过审核</button>
+					<!-- <button class="success-btn" @tap="handleApproveAudit">通过审核</button> -->
 				</template>
 			</template>
 		</view>
@@ -381,8 +381,11 @@
 
 	// 查看磅单
 	const handleViewWeighNote = () => {
-		uni.previewImage({
-			urls: [waybillDetail.value.weigh_note_url]
+		// uni.previewImage({
+		// 	urls: [waybillDetail.value.weigh_note_url]
+		// })
+		uni.navigateTo({
+			url:`/pages/weighnote/index?data=${JSON.stringify(toRaw(waybillDetail.value))}`
 		})
 	}
 

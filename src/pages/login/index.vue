@@ -2,7 +2,7 @@
 	<view class="login-container">
 		<!-- Logo区域 -->
 		<view class="logo-section">
-			<image class="logo" src="/static/images/logo.png" mode="aspectFit"></image>
+			<image class="logo" :src="/static/images/logo.png" mode="aspectFit"></image>
 			<text class="app-name">司机端</text>
 		</view>
 
@@ -15,10 +15,10 @@
 			</button>
 
 			<!-- 手机号密码登录 -->
-			<button class="login-btn phone-btn" @tap="handlePhoneLogin">
+			<!-- <button class="login-btn phone-btn" @tap="handlePhoneLogin">
 				<text class="iconfont icon-phone"></text>
 				手机号密码登录
-			</button>
+			</button> -->
 		</view>
 
 		<!-- 用户协议 -->
@@ -250,21 +250,21 @@ export default {
 }
 
 .agreement {
-	position: fixed;
-	bottom: calc(env(safe-area-inset-bottom) + 60rpx);
-	left: 0;
-	right: 0;
+	// position: fixed;
+	// bottom: calc(env(safe-area-inset-bottom) + 180rpx);
+	// left: 0;
+	// right: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 0 $spacing-lg;
 	
 	checkbox {
-		margin-right: $spacing-sm;
+		// margin-right: $spacing-sm;
 		
 		// 使用缩小尺寸的替代方案
-		width: 32rpx;
-		height: 32rpx;
+		// width: 32rpx;
+		// height: 32rpx;
 		
 		// 或者使用 transform 的完整写法
 		transform: scale3d(0.8, 0.8, 1);

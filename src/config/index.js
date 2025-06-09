@@ -8,9 +8,9 @@ const ENV = {
 		apiKey:'I6BBZ-7MAOQ-PDW5J-4FWJ2-QNCS6-LLBYU',
     },
     production: {
-        apiBaseUrl: 'http://api.example.com', // 生产环境API地址
         websocketUrl: 'wss://api.example.com', // 生产环境WebSocket地址
 		apiKey:'I6BBZ-7MAOQ-PDW5J-4FWJ2-QNCS6-LLBYU',
+		apiBaseUrl: 'https://bm705jd40744.vicp.fun',
 		mapBaseUrl: 'https://www.zhongyudz.cn',
     }
 }

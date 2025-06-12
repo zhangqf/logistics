@@ -12,25 +12,7 @@
 				"navigationBarTitleText": "我的"
 			}
 		},
-		{
-			"path": "pages/waybill/list",
-			"style": {
-				"navigationBarTitleText": "运单列表",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
-			"path": "pages/waybill/add",
-			"style": {
-				"navigationBarTitleText": "添加运单"
-			}
-		},
-		{
-			"path": "pages/waybill/detail",
-			"style": {
-				"navigationBarTitleText": "运单详情"
-			}
-		},
+		
 		{
 			"path": "pages/login/index",
 			"style": {
@@ -42,50 +24,83 @@
 			"style": {
 				"navigationBarTitleText": "手机号登录"
 			}
-		},
+		}
+		
+	],
+	"subPackages": [
 		{
-			"path": "pages/verify/verify",
-			"style": {
-				"navigationBarTitleText": "实名认证"
-			}
-		},
-		{
-			"path": "pages/shipper/info",
-			"style": {
-				"navigationBarTitleText": "货主信息"
-			}
-		},
-		{
-			"path": "pages/shipper/add",
-			"style": {
-				"navigationBarTitleText": "添加货主"
-			}
-		},
-		{
-			"path": "pages/driver/info",
-			"style": {
-				"navigationBarTitleText": "司机信息"
-			}
-		},
-		{
-			"path": "pages/driver/add",
-			"style": {
-				"navigationBarTitleText": "添加司机"
-			}
-		},
-		{
-			"path" : "pages/map/map",
-			"style" : 
-			{
-				"navigationBarTitleText" : "地图"
-			}
-		},
-		{
-			"path" : "pages/weighnote/index",
-			"style" : 
-			{
-				"navigationBarTitleText" : "磅单"
-			}
+			"root": "waybill",
+			"pages": [
+				{
+					"path": "pages/waybill/list",
+					"style": {
+						"navigationBarTitleText": "运单列表",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "pages/waybill/add",
+					"style": {
+						"navigationBarTitleText": "添加运单"
+					}
+				},
+				{
+					"path": "pages/waybill/detail",
+					"style": {
+						"navigationBarTitleText": "运单详情"
+					}
+				},
+				{
+					"path": "pages/verify/verify",
+					"style": {
+						"navigationBarTitleText": "实名认证"
+					}
+				},
+				{
+					"path": "pages/shipper/info",
+					"style": {
+						"navigationBarTitleText": "货主信息"
+					}
+				},
+				{
+					"path": "pages/shipper/add",
+					"style": {
+						"navigationBarTitleText": "添加货主"
+					}
+				},
+				{
+					"path": "pages/shipper/detail",
+					"style": {
+						"navigationBarTitleText": "货主详情"
+					}
+				},
+				{
+					"path": "pages/driver/info",
+					"style": {
+						"navigationBarTitleText": "司机信息"
+					}
+				},
+				{
+					"path": "pages/driver/add",
+					"style": {
+						"navigationBarTitleText": "添加司机"
+					}
+				},
+				{
+					"path" : "pages/map/map",
+					"style" : 
+					{
+						"navigationBarTitleText" : "地图"
+					}
+				},
+				{
+					"path" : "pages/weighnote/index",
+					"style" : 
+					{
+						"navigationBarTitleText" : "磅单"
+					}
+				}
+			]
 		}
 	],
 	"globalStyle": {

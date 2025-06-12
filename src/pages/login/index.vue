@@ -2,7 +2,7 @@
 	<view class="login-container">
 		<!-- Logo区域 -->
 		<view class="logo-section">
-			<image class="logo" :src="/static/images/logo.png" mode="aspectFit"></image>
+			<image class="logo" :src="logo" mode="aspectFit"></image>
 			<text class="app-name">司机端</text>
 		</view>
 
@@ -11,7 +11,7 @@
 			<!-- 微信手机号登录 -->
 			<button class="login-btn wechat-btn" open-type="getPhoneNumber" @getphonenumber="handleGetPhoneNumber">
 				<text class="iconfont icon-wechat"></text>
-				微信手机号一键登录
+				手机号一键登录
 			</button>
 
 			<!-- 手机号密码登录 -->
@@ -33,10 +33,11 @@
 		</view>
 	</view>
 </template>
-
 <script>
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
+
+import logo from '@/static/logo.jpg'
 
 export default {
 	setup() {
@@ -167,6 +168,7 @@ export default {
 		}
 
 		return {
+			logo,
 			agreed,
 			toggleAgreement,
 			handleGetPhoneNumber,
@@ -179,8 +181,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use '../../styles/index.scss' as *;
-
+@use '@/styles/index.scss';
 .login-container {
 	min-height: 100vh;
 	background-color: $bg-white;
@@ -257,7 +258,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 $spacing-lg;
+	padding: 0 $spacing-sm;
 	
 	checkbox {
 		// margin-right: $spacing-sm;

@@ -11,10 +11,14 @@
 					</view>
 				</swiper-item>
 				<swiper-item>
-					<view class="swiper-item uni-bg-green"><image class="banner-image" :src="banner21" mode="aspectFill"></image></view>
+					<view class="swiper-item uni-bg-green">
+						<image class="banner-image" :src="banner21" mode="aspectFill"></image>
+					</view>
 				</swiper-item>
 				<swiper-item>
-					<view class="swiper-item uni-bg-blue"><image class="banner-image" :src="banner31" mode="aspectFill"></image></view>
+					<view class="swiper-item uni-bg-blue">
+						<image class="banner-image" :src="banner31" mode="aspectFill"></image>
+					</view>
 				</swiper-item>
 			</swiper>
 			<view class="search-box">
@@ -28,7 +32,7 @@
 			<text class="iconfont icon-notice"></text>
 			<swiper class="notice-swiper" vertical autoplay circular interval="3000">
 				<swiper-item>
-					<text class="notice-text">千云物流祝您一路顺风</text>
+					<text class="notice-text">干云物流祝您一路顺风</text>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -47,10 +51,26 @@
 		<view class="cargo-section">
 			<view class="section-header">
 				<text class="section-title">货主列表</text>
-				<button class="add-btn" @tap="handleAddCargo">添加货主</button>
+				<button v-if="userStore.userInfo.role !== 'driver'" class="add-btn" @tap="handleAddCargo">添加货主</button>
 			</view>
 			<view class="cargo-list">
 				<!-- 这里可以添加货主列表内容 -->
+				<!-- <uni-grid :column="3" :square="true" :highlight="false" @change="change">
+					<uni-grid-item v-for="(item, index) in shipperList" :index="index" :key="index">
+						<view class="grid-item-box">
+
+							<text class="text">{{ item.company_name }}</text>
+						</view>
+					</uni-grid-item>
+				</uni-grid> -->
+				<uni-grid :column="3" :highlight="true" @change="change">
+					<uni-grid-item v-for="(item, index) in shipperList" :index="index" :key="index">
+						<view class="grid-item-box" style="background-color: #fff;border-radius: 10rpx;">
+							<!-- <uni-icons type="image" :size="30" color="#777" /> -->
+							<text class="text">{{item.company_name}}</text>
+						</view>
+					</uni-grid-item>
+				</uni-grid>
 			</view>
 		</view>
 	</view>
@@ -58,22 +78,32 @@
 
 <script setup>
 	import {
-		ref
+		ref,
+		watchEffect
 	} from 'vue'
-	import {
-		banner
-	} from '@/static/icons/icons.js'
+
 	import {
 		useUserStore
 	} from '../../stores/user';
 
+	import {
+		useShippers
+	} from '@/utils/shipper.js'
+
+
 	import banner1 from '@/static/banner/1.jpg'
 	import banner2 from '@/static/banner/12.jpg'
 	import banner3 from '@/static/banner/123.jpg'
-	import dj from '@/static/png/dj.png'
-	import lb from '@/static/png/lb.png'
-	import r from '@/static/png/r.png'
-	import xc from '@/static/png/xc.png'
+	import dj from '@/static/icon/dj.jpg'
+	import lb from '@/static/icon/lb.jpg'
+	import r from '@/static/icon/r.jpg'
+	import xc from '@/static/icon/xc.jpg'
+
+	const {
+		getShippers,
+		shipperList
+	} = useShippers();
+
 
 	// 功能按钮数据
 	const functionItems = ref([{
@@ -107,36 +137,77 @@
 	const banner11 = banner1
 	const banner21 = banner2
 	const banner31 = banner3
-	
+
 	// 处理功能按钮点击
 	const handleFunctionTap = async (type) => {
 		console.log('Function clicked:', type)
 		if (type === 'verify') {
 			await userStore.fetchGetUserInfo()
 			uni.navigateTo({
-				url: '/pages/verify/verify'
+				url: '/waybill/pages/verify/verify'
 			})
+		}
+		if(!userStore.userInfo.is_approved) {
+			uni.showToast({
+				title: '请先实名认证',
+				icon: 'none'
+			})
+			return
 		}
 		if (type === 'waybill') {
 			// await userStore.fetchGetUserInfo()
 			uni.navigateTo({
-				url: '/pages/waybill/list'
+				url: '/waybill/pages/waybill/list'
 			})
 		}
 
 	}
+	const token = ref(uni.getStorageSync('token') || null)
+	// 监听token变化
+	watchEffect(() => {
+		if (token.value) {
+			getShippers()
+		}
+	})
+
 
 	// 处理添加货主
 	const handleAddCargo = () => {
 		console.log('Add cargo owner clicked')
+		if(!userStore.userInfo.is_approved) {
+			uni.showToast({
+				title: '请先实名认证',
+				icon: 'none'
+			})
+			return
+		}
 		uni.navigateTo({
-			url: '/pages/shipper/add'
+			url: '/waybill/pages/shipper/add'
 		})
 	}
 </script>
 
 <style lang="scss">
-	
+	@use '@/styles/index.scss';
+
+	.grid-item-box {
+		flex: 1;
+		// position: relative;
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		font-size: 28rpx;
+		height: 150rpx;
+		padding: 10rpx;
+
+		.text {
+			text-align: center;
+		}
+	}
+
 	.container {
 		min-height: 100vh;
 		background-color: $bg-color;
@@ -147,23 +218,25 @@
 		position: relative;
 		width: 100%;
 		height: 400rpx;
+
 		.swiper {
 			width: 100%;
 			height: 300rpx;
 		}
-		
+
 		.swiper-item {
 			display: block;
 			height: 300rpx;
 			line-height: 300rpx;
 			width: 100%;
 			text-align: center;
+
 			.banner-image {
 				width: 100%;
 				height: 100%;
 			}
 		}
-		
+
 	}
 
 	// .banner-image {
@@ -240,10 +313,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		.icon-image{
+
+		.icon-image {
 			width: 80rpx;
 			height: 80rpx;
 		}
+
 		.function-icon {
 			font-size: 80rpx;
 			margin-bottom: 12rpx;

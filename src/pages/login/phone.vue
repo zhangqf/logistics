@@ -179,7 +179,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use '../../styles/index.scss' as *;
+@use '@/styles/index.scss';
 
 .phone-login-container {
 	min-height: 100vh;

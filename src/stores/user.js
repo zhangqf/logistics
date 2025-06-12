@@ -37,7 +37,6 @@ export const useUserStore = defineStore('user', {
 						refresh,
 						user
 					} = res.data
-
 					// 保存登录状态
 					this.token = access
 					this.refreshToken = refresh
@@ -53,6 +52,10 @@ export const useUserStore = defineStore('user', {
 
 				throw new Error(res.data.message || '登录失败')
 			} catch (error) {
+				uni.showToast({
+					title: '网络错误请重试',
+					icon: 'error'
+				})
 				console.error('登录失败:', error)
 				throw error
 			}
@@ -81,6 +84,7 @@ export const useUserStore = defineStore('user', {
 						userInfo
 					} = res.data.data
 
+
 					// 保存登录状态
 					this.token = token
 					this.refreshToken = refreshToken
@@ -97,6 +101,10 @@ export const useUserStore = defineStore('user', {
 				throw new Error(res.data.message || '登录失败')
 			} catch (error) {
 				console.error('登录失败:', error)
+				uni.showToast({
+					title: error + '请重试',
+					icon: 'error'
+				})
 				throw error
 			}
 		},
@@ -167,7 +175,7 @@ export const useUserStore = defineStore('user', {
 			try {
 				const res = await getUserInfo()
 				console.log(res)
-				if(res.selfErrorCode === 0) {
+				if (res.selfErrorCode === 0) {
 					await this.updateUserInfo(res.data.data)
 					return true
 				}

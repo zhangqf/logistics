@@ -24,3 +24,10 @@ export function logout() {
     method: 'post'
   })
 } 
+
+export function getShipper() {
+	return request({
+		url: '/api/cargo-owner-info/',
+		method: 'get',
+	})
+}

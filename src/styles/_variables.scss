@@ -6,7 +6,7 @@ $primary-color: #f7db1c;
 $primary-gradient: linear-gradient(135deg, #f7db1c 0%, #e8cf2b 100%);
 
 // 背景色
-$bg-color: #f8f8f8;
+$bg-color: #ecf4ff;
 $bg-white: #fff;
 
 // 文字颜色
@@ -88,3 +88,5 @@ $z-index-loading: 1300;
 //     { name: '实名认证', type: 'verify', text: '&#xe654;' },
 //     { name: '货源广场', type: 'cargo', text: '&#xe73c;' }
 // ] 
+
+$list-content-middle: 150rpx;

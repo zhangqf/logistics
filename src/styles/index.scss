@@ -2,9 +2,9 @@
 @use './iconfont';
 
 // 全局样式
-:root {
-  --safe-area-inset-bottom: env(safe-area-inset-bottom);
-}
+// :root {
+//   --safe-area-inset-bottom: env(safe-area-inset-bottom);
+// }
 
 // 修复小程序按钮默认样式
 button {

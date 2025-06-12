@@ -151,9 +151,9 @@ const request = (options) => {
 					}
 					return
 				}
-				
+
 				// 请求成功
-				if (statusCode === 200) {
+				if (statusCode === 200 || statusCode === 201) {
 					// 业务状态码判断
 					if (data.selfErrorCode === 0) {
 						resolve(data)

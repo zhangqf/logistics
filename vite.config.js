@@ -12,7 +12,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@': resolve(__dirname, 'src'),
-			'pinia': 'pinia/dist/pinia.mjs'
+			'pinia': 'pinia/dist/pinia.mjs',
+			'@utils':resolve(__dirname, 'src/utils/')
 		}
 	},
 	css: {

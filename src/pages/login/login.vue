@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <view class="logo-container">
-      <image class="logo" src="/static/logo.png"></image>
+      <image class="logo" :src="logo"></image>
       <text class="app-name">干云司机</text>
     </view>
     
@@ -24,6 +24,8 @@
 <script setup>
 import { ref } from 'vue';
 import { login } from '@/api/login.js'; // 引入API
+
+import logo from '@/static/logo.jpg'
 
 // 登录状态
 const loading = ref(false);

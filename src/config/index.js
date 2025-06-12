@@ -1,17 +1,19 @@
 // 环境配置
 const ENV = {
     development: {
-        // apiBaseUrl: 'http://192.168.12.7:7000', // 开发环境API地址
-		apiBaseUrl: 'https://bm705jd40744.vicp.fun',
-		mapBaseUrl: 'https://www.zhongyudz.cn',
+        // apiBaseUrl: 'https://www.leyoung.xyz', // 开发环境API地址
+		apiBaseUrl: 'https://www.leyoung.xyz',
+		mapBaseUrl: 'https://www.leyoung.xyz',
         websocketUrl: 'ws://dev-api.example.com', // 开发环境WebSocket地址
 		apiKey:'I6BBZ-7MAOQ-PDW5J-4FWJ2-QNCS6-LLBYU',
     },
     production: {
         websocketUrl: 'wss://api.example.com', // 生产环境WebSocket地址
 		apiKey:'I6BBZ-7MAOQ-PDW5J-4FWJ2-QNCS6-LLBYU',
-		apiBaseUrl: 'https://bm705jd40744.vicp.fun',
-		mapBaseUrl: 'https://www.zhongyudz.cn',
+		// apiBaseUrl: 'https://bm705jd40744.vicp.fun',
+		apiBaseUrl:"https://www.leyoung.xyz",
+		mapBaseUrl: 'https://www.leyoung.xyz',
+		
     }
 }
 

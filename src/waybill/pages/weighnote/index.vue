@@ -3,7 +3,7 @@
 		<!-- 抬头 -->
 		<view id="container" ref="container" class="container">
 			<canvas v-if="canDownload" canvas-id="myQrcode"
-				style="postion:absolut;top:0;left:0;width:100px;height:100px;"></canvas>
+				style="postion:absolut;top:0;left:40rpx;width:100px;height:100px;"></canvas>
 			<view class="header-section">
 				<view class="company-title">新疆哈密三塘湖能源开发建设有限责任公司</view>
 				<view class="document-title">销售过磅单</view>
@@ -112,9 +112,16 @@
 			</view>
 			<text class="page-number">1-1</text>
 		</view>
+		<view class="footer-button" v-if="canDownload">
+			<view class="footer-button-item">
+				下载电子磅单（限时免费）
+			</view>
+			<view class="footer-button-item">
+				打印电子磅单（限时免费）
+			</view>
+		</view>
 		<!-- 底部操作区 -->
 		<view class="footer-actions">
-
 			<view class="buttons">
 				<button class="action-btn primary-btn" v-if="!canDownload" @tap="generateQRCode">生成二维码</button>
 				<!-- <button class="action-btn secondary-btn" :disabled="!canDownload" @tap="downloadImage">下载为图片</button> -->
@@ -176,8 +183,8 @@
 	const backgroundImageStyle = computed(() => {
 		return {
 			backgroundImage: bgImageUrl.value ? `url(${bgImageUrl.value})` : 'none',
-			backgroundRepeat: 'no-repeat',
-			backgroundSize: 'cover',
+			// backgroundRepeat: 'no-repeat',
+			backgroundSize: '100% auto',
 			backgroundPosition: 'center'
 		}
 	})
@@ -512,7 +519,7 @@
 
 	#container {
 		position: relative;
-		padding: 10rpx 30rpx;
+		padding: 10rpx 4rpx;
 		margin-top: 10rpx;
 	}
 
@@ -535,10 +542,11 @@
 		}
 
 		.unit {
-			text-align: right;
+			text-align: center;
 			font-size: 26rpx;
-			color: #666;
-			padding-right: 10rpx;
+			color: #000;
+			padding-left: 10rpx;
+			margin-left: 300rpx;
 		}
 	}
 
@@ -622,7 +630,23 @@
 		margin-right: 10rpx;
 		float: right;
 	}
-
+.footer-button{
+	display: flex;
+	height: 100rpx;
+	background: #F7DB1C;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	line-height: 100rpx;
+	justify-content: space-around;
+	font-family: 'EnglishFont', 'ChineseFont', sans-serif;
+	font-size: 32rpx;
+	padding-bottom: calc(env(safe-area-inset-bottom));
+	.footer-button-item{
+		text-align: center;
+	}
+}	
 	.footer-actions {
 		display: flex;
 		flex-direction: column;

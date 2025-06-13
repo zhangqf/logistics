@@ -1,6 +1,6 @@
 <template>
 	<view class="waybill-list">
-		
+
 		<!-- 列表 -->
 		<scroll-view scroll-y class="list-container" @scrolltoupper="loadMore">
 			<view class="waybill-item" v-for="item in waybillList" :key="item.id" @tap="showDetail(item)">
@@ -25,7 +25,7 @@
 				</view>
 				<view style="text-align: center; color: #7f7f7f;">{{formatDate(item.issue_time)}}</view>
 				<view class="bottom-info">
-					
+
 
 					<button v-if="userRole!=='driver'" class="assign-btn" @tap.stop="showDriverSelect(item)"
 						:disabled="item.status !== 'created'">
@@ -37,7 +37,7 @@
 				</view>
 			</view>
 			<view class="" style="width: 100%; height: 150rpx;">
-				
+
 			</view>
 			<!-- 加载更多 -->
 			<view class="loading-more" v-if="waybillList.length < 1">
@@ -61,22 +61,29 @@
 			<scroll-view scroll-y class="driver-list">
 				<view class="driver-item" v-for="driver in drivers" :key="driver.id"
 					:class="{ active: selectedDriver?.id === driver.id }" @tap="selectDriver(driver)">
-					<image class="avatar" :src="driver.avatar" mode="aspectFill"></image>
+					<!-- <image class="avatar" :src="driver.avatar" mode="aspectFill"></image> -->
 					<view class="driver-info">
-						<text class="name">{{driver.driver_name}}</text>
-						<text class="phone">{{driver.driver_phone}}</text>
+						<view style="display: flex;justify-content: space-between;">
+							<text class="name">{{driver.driver_name}}</text>
+							<text class="plate">{{driver.driver_license_plate}}</text>
+						</view>
+						<text class="phone">{{driver.phone}}</text>
 					</view>
-					<text class="select-icon" v-if="selectedDriver?.id === driver.id">✓</text>
+					<!-- <text class="select-icon" v-if="selectedDriver?.id === driver.id">✓</text> -->
+				</view>
+				<view class="driver-item empty">
 				</view>
 			</scroll-view>
 
-			<view class="popup-footer">
-				<button class="cancel-btn" @tap="closeDriverPopup">
-					取消
-				</button>
-				<button class="confirm-btn" @tap="handleAssignDriver" :disabled="!selectedDriver">
-					确认分配
-				</button>
+			<view class="footer">
+				<view class="popup-footer">
+					<button class="cancel-btn" @tap="closeDriverPopup">
+						取消
+					</button>
+					<button class="confirm-btn" @tap="handleAssignDriver" :disabled="!selectedDriver">
+						确认分配
+					</button>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -186,7 +193,7 @@
 
 	// 加载更多
 	const loadMore = () => {
-		 console.log("阿萨德噶傻大个")
+		console.log("阿萨德噶傻大个")
 		if (hasMore.value) {
 			fetchWaybillList()
 		}
@@ -277,13 +284,14 @@
 		font-family: iconfont;
 		src: url('@/static/font/iconfont.ttf');
 	}
-// .warpper{
-// 	padding-bottom: calc(80rpx + env(safe-area-inset-bottom));
-// }
+
+	// .warpper{
+	// 	padding-bottom: calc(80rpx + env(safe-area-inset-bottom));
+	// }
 	.waybill-list {
 		min-height: 100vh;
 		background-color: $bg-color;
-		
+
 	}
 
 	.list-container {
@@ -429,7 +437,7 @@
 			}
 
 			&:active {
-				opacity: 0.8;
+				opacity: 1;
 			}
 		}
 	}
@@ -456,6 +464,7 @@
 		max-height: 70vh;
 		display: flex;
 		flex-direction: column;
+		padding-bottom: calc(env(safe-area-inset-bottom));
 	}
 
 	.popup-header {
@@ -480,18 +489,23 @@
 
 	.driver-list {
 		flex: 1;
-		padding: 0 $spacing-lg;
+		// padding: 0 $spacing-lg;
 		max-height: 60vh;
+		box-sizing: border-box;
 	}
 
 	.driver-item {
 		display: flex;
 		align-items: center;
-		padding: $spacing-md 0;
-		border-bottom: 2rpx solid $border-color;
+		padding: $spacing-md $spacing-lg;
+		border-bottom: 2rpx solid $border-color1;
+		
+		&.empty {
+			height: 140rpx;
+		}
 
 		&.active {
-			background: rgba($primary-color, 0.05);
+			background: rgba($success-color, 0.15);
 		}
 
 		.avatar {
@@ -514,13 +528,31 @@
 				font-size: $font-size-sm;
 				color: $text-secondary;
 			}
+
+			.plate {
+				color: $text-main;
+				border: 2rpx solid $default-color;
+				border-radius: 8rpx;
+				padding: 10rpx;
+				background-color: $default-color;
+			}
 		}
 
 		.select-icon {
 			font-size: 40rpx;
 			color: $primary-color;
 			margin-left: $spacing-md;
+
 		}
+	}
+
+	.footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding-bottom: calc(env(safe-area-inset-bottom));
+		background-color: #fff;
 	}
 
 	.popup-footer {
@@ -535,7 +567,7 @@
 			border-radius: $radius-lg;
 			font-size: $font-size-md;
 			border: none;
-
+			line-height: 80rpx;
 			&.cancel-btn {
 				background: $bg-color;
 				color: $text-main;
@@ -544,7 +576,7 @@
 
 			&.confirm-btn {
 				background: $primary-gradient;
-				color: $text-white;
+				color: $text-main;
 
 				&[disabled] {
 					opacity: $opacity-disabled;

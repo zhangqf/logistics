@@ -39,7 +39,8 @@
 <script>
 	import {
 		ref,
-		computed
+		computed,
+		watchEffect
 	} from 'vue'
 	import {
 		useUserStore
@@ -60,68 +61,90 @@
 			// 菜单项
 			const menuItems = ref()
 
-			menuItems.value = userStore.userInfo.role === 'driver' ? [
-				// {
-				// 	title: '货主信息',
-				// 	icon: 'icon-shipper',
-				// 	color: '#4080FF',
-				// 	path: '/waybill/pages/shipper/info'
-				// },
-				// {
-				// 	title: '司机信息',
-				// 	icon: 'icon-driver',
-				// 	color: '#9FDB1D',
-				// 	path: '/waybill/pages/driver/info'
-				// },
-				{
-					title: '运单信息',
-					icon: 'icon-order',
-					color: '#F7BA1E',
-					path: '/waybill/pages/waybill/list'
-				},
-				{
-					title: '客服服务',
-					icon: 'icon-service',
-					color: '#FF7D00',
-					path: '/waybill/pages/service/index'
-				},
-				{
-					title: '关于我们',
-					icon: 'icon-about',
-					color: '#00B42A',
-					path: '/waybill/pages/about/index'
-				}
-			] : [{
-					title: '货主信息',
-					icon: 'icon-shipper',
-					color: '#4080FF',
-					path: '/waybill/pages/shipper/info'
-				},
-				{
-					title: '司机信息',
-					icon: 'icon-driver',
-					color: '#9FDB1D',
-					path: '/waybill/pages/driver/info'
-				},
-				{
-					title: '运单信息',
-					icon: 'icon-order',
-					color: '#F7BA1E',
-					path: '/waybill/pages/waybill/list'
-				},
-				{
-					title: '客服服务',
-					icon: 'icon-service',
-					color: '#FF7D00',
-					path: '/waybill/pages/service/index'
-				},
-				{
-					title: '关于我们',
-					icon: 'icon-about',
-					color: '#00B42A',
-					path: '/waybill/pages/about/index'
-				}
-			]
+			watchEffect(() => {
+				menuItems.value = userStore.userInfo.role === 'driver' ? [{
+						title: '运单信息',
+						icon: 'icon-order',
+						color: '#F7BA1E',
+						path: '/waybill/pages/waybill/list'
+					},
+					{
+						title: '客服服务',
+						icon: 'icon-service',
+						color: '#FF7D00',
+						path: '/waybill/pages/service/index'
+					},
+					{
+						title: '关于我们',
+						icon: 'icon-about',
+						color: '#00B42A',
+						path: '/waybill/pages/about/index'
+					}
+				] : [{
+						title: '货主信息',
+						icon: 'icon-shipper',
+						color: '#4080FF',
+						path: '/waybill/pages/shipper/info'
+					},
+					{
+						title: '司机信息',
+						icon: 'icon-driver',
+						color: '#9FDB1D',
+						path: '/waybill/pages/driver/info'
+					},
+					{
+						title: '运单信息',
+						icon: 'icon-order',
+						color: '#F7BA1E',
+						path: '/waybill/pages/waybill/list'
+					},
+					{
+						title: '客服服务',
+						icon: 'icon-service',
+						color: '#FF7D00',
+						path: '/waybill/pages/service/index'
+					},
+					{
+						title: '关于我们',
+						icon: 'icon-about',
+						color: '#00B42A',
+						path: '/waybill/pages/about/index'
+					}
+				]
+			})
+
+			//  = userStore.userInfo.role === 'driver' ? [
+			// 	// {
+			// 	// 	title: '货主信息',
+			// 	// 	icon: 'icon-shipper',
+			// 	// 	color: '#4080FF',
+			// 	// 	path: '/waybill/pages/shipper/info'
+			// 	// },
+			// 	// {
+			// 	// 	title: '司机信息',
+			// 	// 	icon: 'icon-driver',
+			// 	// 	color: '#9FDB1D',
+			// 	// 	path: '/waybill/pages/driver/info'
+			// 	// },
+			// 	{
+			// 		title: '运单信息',
+			// 		icon: 'icon-order',
+			// 		color: '#F7BA1E',
+			// 		path: '/waybill/pages/waybill/list'
+			// 	},
+			// 	{
+			// 		title: '客服服务',
+			// 		icon: 'icon-service',
+			// 		color: '#FF7D00',
+			// 		path: '/waybill/pages/service/index'
+			// 	},
+			// 	{
+			// 		title: '关于我们',
+			// 		icon: 'icon-about',
+			// 		color: '#00B42A',
+			// 		path: '/waybill/pages/about/index'
+			// 	}
+			// ] :
 
 			// 处理登录按钮点击
 			const handleLoginClick = () => {
@@ -144,7 +167,7 @@
 					}, 1500)
 					return
 				}
-				if(!userStore.userInfo.is_approved) {
+				if (!userStore.userInfo.is_approved) {
 					uni.showToast({
 						title: '请先实名认证',
 						icon: 'none'

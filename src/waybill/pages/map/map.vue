@@ -3,7 +3,7 @@
 		<map style="width: 100%; height: 100vh;" :scale="1" :markers="markers" :include-points="includePoints"
 			:polyline='mapOptions.polyline'>
 		</map>
-		<view v-if="role === 'admin'" class="input-section-arrow">
+		<view class="input-section-arrow">
 			<image :src="toggleImage" class="ui-img" mode="aspectFit" @click="toggleInputSection"></image>
 
 			<view class="top-info" v-if="isInputSectionVisible">
@@ -20,24 +20,31 @@
 				</view>
 				<view class="data-block">
 					<view class="data-column">
-						<input type="number" class="data-value" v-model="distance" @input="onMileageInput" />
+						<input v-if="role === 'admin'" type="number" class="data-value" v-model="distance"
+							@input="onMileageInput" />
+						<text v-else class="data-value">{{distance}}</text>
 						<text class="data-label">行驶里程（km）</text>
 					</view>
 					<view class="data-column">
 						<view class="time-input-container">
-							<input type="number" class="time-input" v-model="days" @input="onTimeInput" pattern="[0-9]*"
-								maxlength="2" />
+							<input v-if="role === 'admin'" type="number" class="time-input" v-model="days"
+								@input="onTimeInput" pattern="[0-9]*" maxlength="2" />
+							<text v-else class="data-value">{{days > 9 ? days: '0' + days}}</text>
 							<text>:</text>
-							<input type="number" class="time-input" v-model="hours" @input="onTimeInput"
-								pattern="[0-9]*" maxlength="2" />
+							<input v-if="role === 'admin'" type="number" class="time-input" v-model="hours"
+								@input="onTimeInput" pattern="[0-9]*" maxlength="2" />
+							<text v-else class="data-value">{{hours > 9 ? hours: '0' + hours}}</text>
 							<text>:</text>
-							<input type="number" class="time-input" v-model="minutes" @input="onTimeInput"
-								pattern="[0-9]*" maxlength="2" />
+							<input v-if="role === 'admin'" type="number" class="time-input" v-model="minutes"
+								@input="onTimeInput" pattern="[0-9]*" maxlength="2" />
+							<text v-else class="data-value">{{minutes > 9 ? minutes: '0' + minutes}}</text>
 						</view>
 						<text class="data-label">行驶时长(d/h/m)</text>
 					</view>
 					<view class="data-column">
-						<input type="number" class="data-value" v-model="speed" @input="onSpeedInput" />
+						<input v-if="role === 'admin'" type="number" class="data-value" v-model="speed"
+							@input="onSpeedInput" />
+						<text v-else class="data-value">{{speed}}</text>
 						<text class="data-label">平均时速（km/h）</text>
 					</view>
 				</view>
@@ -56,7 +63,9 @@
 	import {
 		getMapDetial
 	} from '@/waybill/api/map.js'
-	import {generateUUID} from '@/waybill/utils/utils.js'
+	import {
+		generateUUID
+	} from '@/waybill/utils/utils.js'
 	import upImage from '@/static/a_up.png'
 	import downImage from '@/static/a_down.png'
 	import aCircleRed from '@/static/a_circle_red.png'
@@ -66,8 +75,10 @@
 	import {
 		onLoad
 	} from '@dcloudio/uni-app'
-	import { useUserStore } from '@/stores/user'
-	
+	import {
+		useUserStore
+	} from '@/stores/user'
+
 	const userStore = useUserStore()
 	const role = userStore.userInfo.role || ''
 	// 基本变量
@@ -85,7 +96,7 @@
 	const toggleImage = ref(upImage)
 	const includePoints = ref([])
 	const parsedPolyline = ref([])
-	
+
 	// 核心数据变量
 	const distance = ref(0) // 行驶里程 (km)
 	const days = ref(0) // 天数
@@ -166,7 +177,7 @@
 			calculateParkingPoints()
 		} else {
 			speed.value = 0
-			
+
 		}
 	}
 
@@ -190,11 +201,11 @@
 		try {
 			const res = await getMapDetial(startCity.value, endCity.value)
 			// const res = await getMapDetial("上海", "乌鲁木齐")
-			
+
 			mapOptions.value = res.data
 			const parsedPolyline = res.data.polyline
 			startandend.push(...res.data.markers)
-			
+
 			startandend.push({
 				...res.data.markers[0],
 				iconPath: aCar,
@@ -373,10 +384,8 @@
 		departureTime.value = data.departureTime || ''
 		getDetail()
 		// console.log('uuid', uuidv4())
-		
-	})
-	
 
+	})
 </script>
 
 <style scoped>

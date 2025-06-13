@@ -14,7 +14,7 @@
 				<view class="driver-info">
 					<view class="main-info">
 						<text class="name">{{item.driver_name}}</text>
-						<text class="phone">{{item.driver_phone}}</text>
+						<text class="phone">{{item.phone}}</text>
 					</view>
 					<view class="plate-number">
 						<text class="label">车牌号：</text>
@@ -173,7 +173,7 @@
 
 					.value {
 						font-size: $font-size-md;
-						color: $primary-color;
+						color: $default-color;
 						font-weight: 500;
 					}
 				}

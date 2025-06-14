@@ -109,6 +109,8 @@
 	import {
 		onShow
 	} from '@dcloudio/uni-app'
+	
+	import {statusMap} from '@/waybill/utils/utils.js'
 
 
 
@@ -122,13 +124,7 @@
 	const userRole = ref(userStore.userInfo?.role || '')
 
 	// 状态映射
-	const statusMap = {
-		created: '已创建',
-		assigned: '已分配',
-		auditing: '审核中',
-		approved: '已审核',
-		completed: '已完成'
-	}
+	
 
 	// 列表数据
 	const waybillList = ref([])
@@ -337,6 +333,11 @@
 				// background: #E6F7FF;
 				color: #a61dff;
 			}
+			
+			&.poundageok {
+				// background: #E6F7FF;
+				color: #240fe5;
+			}
 
 			&.completed {
 				// background: #F6FFED;
@@ -368,7 +369,10 @@
 				background: #ffe3f7;
 				color: #a61dff;
 			}
-
+			&.poundageok {
+				background: #c2d0f9;
+				color: #240fe5;
+			}
 			&.completed {
 				background: #cafff5;
 				color: #31c6a9;

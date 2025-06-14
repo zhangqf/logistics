@@ -11,3 +11,17 @@ export const generateUUID = () => {
 		return v.toString(10);
 	});
 }
+
+const getDuration = (start, end) => {
+
+}
+
+
+export const statusMap = {
+	created: '待分配',
+	assigned: '待完善',
+	auditing: '待审核',
+	approved: '待生成磅单',
+	poundageok: '待生成轨迹',
+	completed: '已完成'
+}

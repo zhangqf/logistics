@@ -5,7 +5,11 @@
 		</map>
 		<view class="input-section-arrow">
 			<image :src="toggleImage" class="ui-img" mode="aspectFit" @click="toggleInputSection"></image>
-
+			<view class="buttons" v-if="isInputSectionVisible && role === 'admin' && status!=='completed'">
+				<button class="primary-btn" @tap="submitData">
+					提交
+				</button>
+			</view>
 			<view class="top-info" v-if="isInputSectionVisible">
 				<view class="time-range">{{departureTime}} — {{arrivalTime}}</view>
 				<view class="place-container">
@@ -61,7 +65,9 @@
 		toRaw
 	} from 'vue'
 	import {
-		getMapDetial
+		getMapDetial,
+		postDistance,
+		getDistance
 	} from '@/waybill/api/map.js'
 	import {
 		generateUUID
@@ -96,6 +102,9 @@
 	const toggleImage = ref(upImage)
 	const includePoints = ref([])
 	const parsedPolyline = ref([])
+	const id = ref()
+	const generator = ref(true)
+	const status = ref('')
 
 	// 核心数据变量
 	const distance = ref(0) // 行驶里程 (km)
@@ -132,22 +141,29 @@
 		scale: 6
 	})
 
+	const mapDetails = ref()
+
 	// 当获取到地图详情时更新数据
-	watch(() => mapOptions.value, (newVal) => {
-		distance.value = newVal.distance.toFixed(0) || 0
-		totalMinutes.value = newVal.duration || 0
-		updateSpeed()
-		// calculateParkingPoints()
-	}, {
-		deep: true
-	})
+	watch(
+		() =>  mapOptions.value,(newVal) => {
+			// distance.value = newVal.distance.toFixed(0) || 0
+			// totalMinutes.value = newVal.duration || 0
+			// 处理 option 的结构
+			distance.value = (newVal.distance*1).toFixed(0) || 0
+			totalMinutes.value = newVal.duration*1 || 0
+			speed.value = newVal.speed *1 || 0
+			// updateSpeed()
+			calculateParkingPoints()
+		}, {
+			deep: true
+		})
 
 	// 里程输入处理
 	const onMileageInput = (e) => {
 		const value = parseFloat(e.detail.value) || 0
 		distance.value = Math.max(0, value)
-		updateSpeed()
-		// calculateParkingPoints()
+		// updateSpeed()
+		calculateParkingPoints()
 	}
 
 	// 时间输入处理
@@ -157,8 +173,8 @@
 		hours.value = Math.max(0, Math.min(23, parseInt(hours.value) || 0))
 		minutes.value = Math.max(0, Math.min(59, parseInt(minutes.value) || 0))
 
-		updateSpeed()
-		// calculateParkingPoints()
+		// updateSpeed()
+		calculateParkingPoints()
 
 	}
 
@@ -166,7 +182,7 @@
 	const onSpeedInput = (e) => {
 		const value = parseFloat(e.detail.value) || 0
 		speed.value = Math.max(0, value)
-		updateTime()
+		// updateTime()
 	}
 
 	// 更新速度 (基于距离和时间)
@@ -201,8 +217,11 @@
 		try {
 			const res = await getMapDetial(startCity.value, endCity.value)
 			// const res = await getMapDetial("上海", "乌鲁木齐")
-
-			mapOptions.value = res.data
+			if(!generator.value) {
+				mapOptions.value = {...res.data,...mapDetails.value}
+			} else {
+				mapOptions.value = res.data
+			}
 			const parsedPolyline = res.data.polyline
 			startandend.push(...res.data.markers)
 
@@ -227,6 +246,8 @@
 			})
 		}
 	}
+
+
 	// const optimizePoints = (points, maxPoints = 20) => {
 	// 	if (points.length <= maxPoints) return points;
 
@@ -376,13 +397,65 @@
 		toggleImage.value = isInputSectionVisible.value ? downImage : upImage
 	}
 
+	const submitData = async () => {
+		uni.showModal({
+			title: '提示',
+			content: '确认提交修改吗？',
+			success: async (res) => {
+				if (res.confirm) {
+					try {
+						uni.showLoading({
+							title: '处理中...'
+						})
+						const r = {
+							waybill_id: id.value,
+							guiji_distance: distance.value,
+							guiji_time: totalMinutes.value,
+							guiji_speed: speed.value
+						}
+						const res = await postDistance(r)
+						if (res.selfErrorCode === 0) {
+							uni.showToast({
+								title: '提交完成',
+								icon: 'success'
+							})
+							uni.navigateBack()
+						}
+					} catch (error) {
+						uni.showToast({
+							title: '操作失败',
+							icon: 'none'
+						})
+					} finally {
+						uni.hideLoading()
+					}
+				}
+			}
+		})
+		// mapDetails.value =
+	}
+
 	// 页面加载时获取参数
-	onLoad((data) => {
+	onLoad(async (data) => {
 		arrivalTime.value = data.arrivalTime || ''
 		startCity.value = data.startCity || ''
 		endCity.value = data.endCity || ''
 		departureTime.value = data.departureTime || ''
+		id.value = data.id
+		generator.value = data.generator === 'true'
+		status.value = data.status
+		console.log(data)
+		console.log(data.generator)
+		if (!generator.value) {
+			mapDetails.value = {
+				distance: data.guiji_distance,
+				duration: data.guiji_time,
+				speed: data.guiji_speed
+			}
+		}
+		console.log(mapDetails)
 		getDetail()
+
 		// console.log('uuid', uuidv4())
 
 	})
@@ -521,6 +594,11 @@
 		text-align: center;
 		line-height: 50rpx !important;
 		box-sizing: border-box;
+	}
+
+	.primary-btn {
+		background: #F7DB1C;
+		color: #333333;
 	}
 
 	.data-block input:focus {

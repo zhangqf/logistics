@@ -29,6 +29,7 @@ export function assignWaybills(data) {
 	})
 }
 
+
 // 提交审核
 export function aubmitAudit(data) {
 	console.log("submitAudit")
@@ -59,6 +60,11 @@ export function generateWeighNote() {
 
 // 审核通过
 
-export function approveWaybill() {
+export function approveWaybill(id, data) {
 	console.log('approveWaybill')
+	return request({
+		url:`/api/waybill-details/${id}/review/`,
+		method: 'post',
+		data
+	})
 }

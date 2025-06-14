@@ -204,26 +204,60 @@
 		})
 	}
 	const generateQRCode = async () => {
-		if (weighNote.value.status === 'auditing') {
-			const r = toRaw(weighNote.value)
-			const res = await postWeighnote(r)
-			console.log(res)
-
+		
+		if (!weighNote.value.factory_entry_time) {
 			uni.showToast({
-				title: "磅单已生成",
+				title: '入厂时间不能为空！',
+				icon: 'none'
 			})
-			setTimeout(() => {
-				uni.navigateBack({
-					delta: 1
+			return false
+		}
+		if (!weighNote.value.factory_exit_time) {
+			uni.showToast({
+				title: '出厂时间不能为空！',
+				icon: 'none'
+			})
+			return false
+		}
+		if (!weighNote.value.poundage_number) {
+			uni.showToast({
+				title: '磅单编号不能为空！',
+				icon: 'none'
+			})
+			return false
+		}
+		
+		
+		
+		if (weighNote.value.status === 'approved') {
+			try{
+				uni.showLoading({
+					title:'生成中...'
 				})
-			}, 500)
+				const r = toRaw(weighNote.value)
+				const res = await postWeighnote(r)
+				console.log(res)
+				canDownload.value = true
+				uni.showToast({
+					title: "磅单已生成",
+				})
+				setTimeout(() => {
+					uni.navigateBack({
+						delta: 1
+					})
+				}, 500)
+			}catch(e){
+				//TODO handle the exception
+			}finally{
+				uin.hideLoading()
+			}
 		}
 		// uni.showToast({
 		// 	title: '生成二维码功能待实现',
 		// 	icon: 'none'
 		// })
 		// 实际项目中这里会调用生成二维码的API或库
-		canDownload.value = true // 模拟生成二维码后可下载
+		 // 模拟生成二维码后可下载
 	}
 	const tableFields = ref([{
 			label: '进场时间',
@@ -476,13 +510,14 @@
 			assignee_info,
 			...rest
 		} = JSON.parse(currentPage.options.data)
+		console.log(currentPage.options.data)
 		if (rest.poundage_id) {
 			isRead.value = true
 			const res = await getBgImage(currentPage.options.bgid)
 			bgImageUrl.value = config.apiBaseUrl + res.data.bg_image_url
 		}
 
-		if (rest.status !== 'auditing') {
+		if (rest.status !== 'approved') {
 			const res = await getWeighnote(rest.poundage_id)
 			console.log(res)
 
@@ -499,6 +534,7 @@
 				license_plate: assignee_info.driver_license_plate,
 				factory_entry_time: null,
 				factory_exit_time: null,
+				receiver_address:''
 			})
 		}
 		console.log(weighNote.value)
@@ -558,23 +594,26 @@
 			display: flex;
 			border-bottom: 2rpx solid #000;
 			height: 70rpx;
-
+			align-items: center;
 			&:last-child,
 			&.no-border-bottom {
 				border-bottom: none;
 			}
-
+			
 			.uni-date-x {
 				background-color: #F1f1f1;
-				height: 50rpx;
-
+				height: 60rpx;
+				.uni-date-editor--x {
+					border:none !important;
+				}
+				
 				.icon-calendar {
 					display: none;
 				}
 
 				.uni-date__x-input {
 					font-size: 38rpx;
-					height: 50rpx;
+					height: 60rpx;
 					padding-left: 10rpx;
 				}
 
@@ -631,18 +670,19 @@
 		float: right;
 	}
 .footer-button{
+	z-index: 10;
 	display: flex;
-	height: 100rpx;
+	height: 80rpx;
 	background: #F7DB1C;
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	line-height: 100rpx;
+	line-height: 80rpx;
 	justify-content: space-around;
 	font-family: 'EnglishFont', 'ChineseFont', sans-serif;
 	font-size: 32rpx;
-	padding-bottom: calc(env(safe-area-inset-bottom));
+	// padding-bottom: calc(env(safe-area-inset-bottom));
 	.footer-button-item{
 		text-align: center;
 	}

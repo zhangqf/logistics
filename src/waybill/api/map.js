@@ -33,7 +33,7 @@ export function getMapDetials(startCity, endCity) {
 			title: '加载中...'
 		})
 		uni.request({
-			url: `${config.mapBaseUrl}/api/get-route-info`,
+			url: `${config.mapBaseUrl}/get-route-info`,
 			method: 'post',
 			data: {
 				// apiKey: config.apiKey,
@@ -53,3 +53,24 @@ export function getMapDetials(startCity, endCity) {
 	})
 
 }
+
+
+
+
+
+export function postDistance(data) {
+	return request({
+		url: '/api/guiji-details/',
+		method: 'post',
+		data
+	})
+}
+
+export function getDistance(id,data) {
+	return request({
+		url: `/api/guiji-details/${id}/`,
+		method: 'get',
+	})
+}
+
+

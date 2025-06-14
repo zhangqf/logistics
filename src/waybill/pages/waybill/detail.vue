@@ -179,21 +179,24 @@
 					v-model="waybillDetail.axle_count" />
 				<text v-else class="value">{{waybillDetail.axle_count}}</text> 轴
 			</view>
-			<view class="info-item">
-				<text class="label required">出发时间</text>
+			<view class="info-item" v-if="waybillDetail.status==='auditing' && userRole === 'admin'">
+				<text class="label required" >出发时间</text>
 
-				<!-- <input class="uni-input input" placeholder="请输入出发时间" v-model="waybillDetail.factory_entry_time" /> 米 -->
-				<uni-datetime-picker v-if="waybillDetail.status==='assigned'" type="datetime"
+				<uni-datetime-picker  type="datetime"
 					v-model="waybillDetail.delivery_time" return-type='date' />
-				<text v-else class="value">{{formatDate(waybillDetail.delivery_time)}}</text> 
 			</view>
-			<view class="info-item">
-				<text class="label required">到达时间</text>
-
-				<!-- <input class="uni-input input" placeholder="请输入到达时间" v-model="waybillDetail.factory_exit_time" /> 米 -->
-				<uni-datetime-picker v-if="waybillDetail.status==='assigned'" style="width: 100%; height: 80rpx;"
+			<view class="info-item"  v-if="waybillDetail.status!=='assigned'  && waybillDetail.status!=='auditing'">
+				<text class="label" >出发时间</text>
+				<text class="value">{{formatDate(waybillDetail.delivery_time)}}</text> 
+			</view>
+			<view class="info-item" v-if="waybillDetail.status==='auditing' && userRole === 'admin'">
+				<text class="label required" >到达时间</text>
+				<uni-datetime-picker  style="width: 100%; height: 80rpx;"
 					type="datetime" return-type='date' v-model="waybillDetail.receiver_time" />
-				<text v-else class="value">{{formatDate(waybillDetail.receiver_time)}}</text>
+			</view>
+			<view class="info-item"  v-if="waybillDetail.status!=='assigned' && waybillDetail.status!=='auditing'">
+				<text class="label" >到达时间</text>
+				<text class="value">{{formatDate(waybillDetail.receiver_time)}}</text>
 			</view>
 			<view class="info-item">
 				<text class="label">司机姓名</text>
@@ -217,23 +220,28 @@
 				<template v-if="waybillDetail.status === 'assigned'">
 					<button class="primary-btn" @tap="handleAudit">提交审核</button>
 				</template>
-				<template v-if="waybillDetail.status === 'approved' || waybillDetail.status === 'completed'">
+				<template v-if="waybillDetail.status === 'completed'">
 					<!-- <button class="primary-btn" @tap="handleDownloadWeighNote">下载电子磅单</button> -->
 					<button class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
-					<button class="secondary-btn" @tap="handleViewWeighNote">查看磅单</button>
+					<button class="primary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
 			</template>
 
 			<!-- 管理员角色 -->
 			<template v-if="userRole === 'admin'">
-				<template v-if="waybillDetail.status === 'auditing'">
-					<button class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
-					<button class="secondary-btn" @tap="handleGenerateWeighNote">生成磅单</button>
+				<template v-if="waybillDetail.status === 'auditing'||waybillDetail.status === 'approved'">
+					<template v-if="waybillDetail.status === 'auditing'">
+						<button  class="success-btn" @tap="handleApproveAudit">通过审核</button>
+					</template>
+					<template v-else>
+						<!-- <button class="primary-btn" @tap="handleViewTrack">查看轨迹</button> -->
+						<button class="secondary-btn" @tap="handleGenerateWeighNote">生成磅单</button>
+					</template>
 				</template>
 				<template v-else>
-					<button class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
-					<button class="secondary-btn" @tap="handleViewWeighNote">查看磅单</button>
-					<!-- <button class="success-btn" @tap="handleApproveAudit">通过审核</button> -->
+					<button v-if='userRole === "admin" && waybillDetail.status !== "completed"'class="secondary-btn" @tap="handleGeneratorTrack">生成轨迹</button>
+					<button v-if='waybillDetail.status === "completed"' class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
+					<button class="primary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
 			</template>
 		</view>
@@ -252,10 +260,10 @@
 	import {
 		getWaybillDetail,
 		approveWaybill,
-		aubmitAudit
+		aubmitAudit,
 	} from '@/waybill/api/waybills'
 	import {
-		formatDate
+		formatDate,statusMap
 	} from '@/waybill/utils/utils.js'
 	import {
 		onShow
@@ -264,15 +272,6 @@
 	const userStore = useUserStore()
 	const waybillDetail = ref({})
 	const userRole = ref(userStore.userInfo.role)
-
-	// 状态映射
-	const statusMap = {
-		created: '已创建',
-		assigned: '已分配',
-		auditing: '审核中',
-		approved: '已审核',
-		completed: '已完成'
-	}
 
 	// 获取运单详情
 	const getDetail = async (id) => {
@@ -315,20 +314,7 @@
 			})
 			return false 
 		}
-		if (!waybillDetail.value.delivery_time) { 
-			uni.showToast({
-				title: '请输入出发时间',
-				icon: 'none'
-			})
-			return false
-		}
-		if (!waybillDetail.value.receiver_time) {
-			uni.showToast({
-				title: '请输入到达时间',
-				icon: 'none'
-			})
-			return false
-		}
+		
 		return true
 	}
 	// 司机 - 提交审核
@@ -407,11 +393,18 @@
 			url: `/waybill/pages/weighnote/index?data=${JSON.stringify(toRaw(waybillDetail.value))}&bgid=${bgid.value}`
 		})
 	}
+	
+	const handleGeneratorTrack = () => {
+		uni.navigateTo({
+			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}&id=${waybillDetail.value.waybill}&generator=${true}`
+		})
+	}
 
 	// 查看轨迹
 	const handleViewTrack = () => {
 		uni.navigateTo({
-			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}`
+			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}&id=${waybillDetail.value.waybill}
+			&generator=${false}&guiji_distance=${waybillDetail.value.guiji_distance}&guiji_speed=${waybillDetail.value.guiji_speed}&guiji_time=${waybillDetail.value.guiji_time}&status=${waybillDetail.value.status}` 
 		})
 	}
 
@@ -444,6 +437,20 @@
 
 	// 通过审核
 	const handleApproveAudit = () => {
+		if (!waybillDetail.value.delivery_time) {
+			uni.showToast({
+				title: '请输入出发时间',
+				icon: 'none'
+			})
+			return false
+		}
+		if (!waybillDetail.value.receiver_time) {
+			uni.showToast({
+				title: '请输入到达时间',
+				icon: 'none'
+			})
+			return false
+		}
 		uni.showModal({
 			title: '提示',
 			content: '确认通过审核？',
@@ -453,7 +460,12 @@
 						uni.showLoading({
 							title: '处理中...'
 						})
-						const res = await approveWaybill(waybillDetail.value.id)
+						console.log(waybillDetail.value)
+						const r = {
+							delivery_time:waybillDetail.value.delivery_time,
+							receiver_time:waybillDetail.value.receiver_time
+						}
+						const res = await approveWaybill(waybillDetail.value.id,r)
 						if (res.selfErrorCode === 0) {
 							uni.showToast({
 								title: '审核通过',
@@ -532,7 +544,9 @@
 				// background: #ffe3f7;
 				color: #a61dff;
 			}
-			
+			&.poundageok {
+				color: #240fe5;
+			}
 			&.completed {
 				// background: #cafff5;
 				color: #31c6a9;
@@ -563,6 +577,10 @@
 			&.approved {
 				background: #ffe3f7;
 				color: #a61dff;
+			}
+			&.poundageok {
+				background: #c2d0f9;
+				color: #240fe5;
 			}
 			
 			&.completed {
@@ -685,7 +703,7 @@
 			}
 
 			&.secondary-btn {
-				background: #FFFFFF;
+				background: #fff6c0;
 				color: #333333;
 				border: 2rpx solid #DDDDDD;
 			}

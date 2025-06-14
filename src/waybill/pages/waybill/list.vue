@@ -23,7 +23,7 @@
 					<text>{{item.material_info}}</text>
 					<!-- <text class="company">{{item.receiver_company}}</text> -->
 				</view>
-				<view style="text-align: center; color: #7f7f7f;">{{formatDate(item.issue_time)}}</view>
+				<view style="text-align: center; color: #7f7f7f;">{{formatDate(item.detail_info?.dispatch_time)}}</view>
 				<view class="bottom-info">
 
 
@@ -165,6 +165,7 @@
 			})
 			return
 		}
+		
 		uni.navigateTo({
 			url: `/waybill/pages/waybill/detail?id=${waybill.detail_info.id}&bgid=${waybill.sender_company}`
 		})

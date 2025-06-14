@@ -522,7 +522,7 @@
 			console.log(res)
 
 			weighNote.value = res.data
-			autogenerateQRCode(rest.waybill_number)
+			autogenerateQRCode(res.data.poundage_number)
 			canDownload.value = true
 		} else {
 			rest.waybill_id = rest.waybill

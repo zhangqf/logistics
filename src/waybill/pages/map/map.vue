@@ -24,30 +24,30 @@
 				</view>
 				<view class="data-block">
 					<view class="data-column">
-						<input v-if="role === 'admin'" type="number" class="data-value" v-model="distance"
-							@input="onMileageInput" />
+						<input v-if="role === 'admin' && status!=='completed'" type="number" class="data-value"
+							v-model="distance" @input="onMileageInput" />
 						<text v-else class="data-value">{{distance}}</text>
 						<text class="data-label">行驶里程（km）</text>
 					</view>
 					<view class="data-column">
 						<view class="time-input-container">
-							<input v-if="role === 'admin'" type="number" class="time-input" v-model="days"
-								@input="onTimeInput" pattern="[0-9]*" maxlength="2" />
+							<input v-if="role === 'admin' && status!=='completed'" type="number" class="time-input"
+								v-model="days" @input="onTimeInput" pattern="[0-9]*" maxlength="2" />
 							<text v-else class="data-value">{{days > 9 ? days: '0' + days}}</text>
 							<text>:</text>
-							<input v-if="role === 'admin'" type="number" class="time-input" v-model="hours"
-								@input="onTimeInput" pattern="[0-9]*" maxlength="2" />
+							<input v-if="role === 'admin' && status!=='completed'" type="number" class="time-input"
+								v-model="hours" @input="onTimeInput" pattern="[0-9]*" maxlength="2" />
 							<text v-else class="data-value">{{hours > 9 ? hours: '0' + hours}}</text>
 							<text>:</text>
-							<input v-if="role === 'admin'" type="number" class="time-input" v-model="minutes"
-								@input="onTimeInput" pattern="[0-9]*" maxlength="2" />
+							<input v-if="role === 'admin' && status!=='completed'" type="number" class="time-input"
+								v-model="minutes" @input="onTimeInput" pattern="[0-9]*" maxlength="2" />
 							<text v-else class="data-value">{{minutes > 9 ? minutes: '0' + minutes}}</text>
 						</view>
 						<text class="data-label">行驶时长(d/h/m)</text>
 					</view>
 					<view class="data-column">
-						<input v-if="role === 'admin'" type="number" class="data-value" v-model="speed"
-							@input="onSpeedInput" />
+						<input v-if="role === 'admin' && status!=='completed'" type="number" class="data-value"
+							v-model="speed" @input="onSpeedInput" />
 						<text v-else class="data-value">{{speed}}</text>
 						<text class="data-label">平均时速（km/h）</text>
 					</view>
@@ -145,13 +145,13 @@
 
 	// 当获取到地图详情时更新数据
 	watch(
-		() =>  mapOptions.value,(newVal) => {
+		() => mapOptions.value, (newVal) => {
 			// distance.value = newVal.distance.toFixed(0) || 0
 			// totalMinutes.value = newVal.duration || 0
 			// 处理 option 的结构
-			distance.value = (newVal.distance*1).toFixed(0) || 0
-			totalMinutes.value = newVal.duration*1 || 0
-			speed.value = newVal.speed *1 || 0
+			distance.value = (newVal.distance * 1).toFixed(0) || 0
+			totalMinutes.value = newVal.duration * 1 || 0
+			speed.value = newVal.speed * 1 || 0
 			// updateSpeed()
 			calculateParkingPoints()
 		}, {
@@ -217,8 +217,11 @@
 		try {
 			const res = await getMapDetial(startCity.value, endCity.value)
 			// const res = await getMapDetial("上海", "乌鲁木齐")
-			if(!generator.value) {
-				mapOptions.value = {...res.data,...mapDetails.value}
+			if (!generator.value) {
+				mapOptions.value = {
+					...res.data,
+					...mapDetails.value
+				}
 			} else {
 				mapOptions.value = res.data
 			}
@@ -232,6 +235,28 @@
 				height: 40,
 				id: 'car' // 确保 id 唯一
 			})
+
+			startandend[0].label = {
+				content: `出发时间：\n ${departureTime.value}`,
+				color: '#000',
+				fontSize: 12,
+				anchorX: 0,
+				anchorY: -60, // 适当调整 Y 轴位置，以适应两行文本
+				bgColor: '#fff',
+				padding: 3,
+				borderRadius: 3
+			}
+
+			startandend[1].label = {
+				content: `到达时间：\n ${arrivalTime.value}`,
+				color: '#000',
+				fontSize: 12,
+				anchorX: 0,
+				anchorY: -60, // 适当调整 Y 轴位置，以适应两行文本
+				bgColor: '#fff',
+				padding: 3,
+				borderRadius: 3
+			}
 			includePoints.value = [parsedPolyline[0].points[0], parsedPolyline[0].points[parsedPolyline[0].points
 				.length - 1]];
 			// includePoints.value = parsedPolyline[0].points
@@ -445,6 +470,7 @@
 		generator.value = data.generator === 'true'
 		status.value = data.status
 		console.log(data)
+		console.log('data')
 		console.log(data.generator)
 		if (!generator.value) {
 			mapDetails.value = {
@@ -454,6 +480,17 @@
 			}
 		}
 		console.log(mapDetails)
+		uni.setNavigationBarTitle({
+			title: data.driver_license_plate
+		});
+		uni.setNavigationBarColor({
+			frontColor: '#000000',
+			backgroundColor: '#fafbf3',
+			animation: {
+				duration: 400,
+				timingFunc: 'easeIn'
+			}
+		})
 		getDetail()
 
 		// console.log('uuid', uuidv4())

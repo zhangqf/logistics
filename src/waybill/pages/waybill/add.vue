@@ -32,7 +32,17 @@
 						placeholder-class="placeholder-style" />
 				</view>
 			</view>
-
+			<view class="form-section">
+				<view class="section-title">派车时间</view>
+				<view class="form-item">
+					<text class="label required">派车时间</text>
+					<!-- <textarea v-model="formData.dispatch_time" class="textarea" placeholder="请输入派车时间"
+						placeholder-class="placeholder-style" /> -->
+						<uni-datetime-picker style="width: 100%; " type="datetime" return-type='date'
+							v-model="formData.dispatch_time" />
+				</view>
+				
+			</view>
 			<!-- 物料信息 -->
 			<view class="form-section">
 				<view class="section-title">物料信息</view>
@@ -41,7 +51,9 @@
 					<textarea v-model="formData.materialInfo" class="textarea" placeholder="请输入物料详细信息"
 						placeholder-class="placeholder-style" />
 				</view>
+				
 			</view>
+
 
 			<!-- 防伪背景图 -->
 			<!-- <view class="form-section">
@@ -107,7 +119,8 @@
 		receiverCompany: '',
 		receiverAddress: '',
 		materialInfo: '',
-		securityImage: ''
+		securityImage: '',
+		dispatch_time:''
 	})
 
 	// 生成22位运单号（年份+18位随机码）
@@ -175,7 +188,7 @@
 		// 验证表单
 		if (!formData.value.senderCompany || !formData.value.senderAddress ||
 			!formData.value.receiverCompany || !formData.value.receiverAddress ||
-			!formData.value.materialInfo) {
+			!formData.value.materialInfo || !formData.value.dispatch_time) {
 			uni.showToast({
 				title: '请填写完整信息',
 				icon: 'none'
@@ -195,6 +208,7 @@
 				receiver_company: data.receiverCompany,
 				receiver_address: data.receiverAddress,
 				material_info: data.materialInfo,
+				dispatch_time:data.dispatch_time
 			}
 			console.log(submitData)
 			const res = await postWaybills(submitData)
@@ -360,5 +374,23 @@
 
 	.placeholder-style {
 		color: $text-light;
+	}
+	.uni-date-x {
+		background-color: $bg-color;
+		height: 60rpx;
+		.uni-date-editor--x {
+			border:none !important;
+		}
+		
+		.icon-calendar {
+			display: none;
+		}
+	
+		.uni-date__x-input {
+			font-size: 28rpx;
+			height: 60rpx;
+			padding-left: 10rpx;
+		}
+	
 	}
 </style>

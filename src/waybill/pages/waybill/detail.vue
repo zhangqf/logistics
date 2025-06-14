@@ -14,8 +14,8 @@
 			</view>
 			<view class="info-item">
 				<text class="label">预载重量</text>
-				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" 
-					placeholder="请输入预载重量" v-model="waybillDetail.preload_weight" />
+				<input v-if="waybillDetail.status==='assigned'" class="uni-input input" placeholder="请输入预载重量"
+					v-model="waybillDetail.preload_weight" />
 				<text v-else class="value">{{waybillDetail.preload_weight}}</text>
 				<text style="margin-left:20rpx;"> 吨</text>
 			</view>
@@ -180,22 +180,21 @@
 				<text v-else class="value">{{waybillDetail.axle_count}}</text> 轴
 			</view>
 			<view class="info-item" v-if="waybillDetail.status==='auditing' && userRole === 'admin'">
-				<text class="label required" >出发时间</text>
+				<text class="label required">出发时间</text>
 
-				<uni-datetime-picker  type="datetime"
-					v-model="waybillDetail.delivery_time" return-type='date' />
+				<uni-datetime-picker type="datetime" v-model="waybillDetail.delivery_time" return-type='date' />
 			</view>
-			<view class="info-item"  v-if="waybillDetail.status!=='assigned'  && waybillDetail.status!=='auditing'">
-				<text class="label" >出发时间</text>
-				<text class="value">{{formatDate(waybillDetail.delivery_time)}}</text> 
+			<view class="info-item" v-if="waybillDetail.status!=='assigned'  && waybillDetail.status!=='auditing'">
+				<text class="label">出发时间</text>
+				<text class="value">{{formatDate(waybillDetail.delivery_time)}}</text>
 			</view>
 			<view class="info-item" v-if="waybillDetail.status==='auditing' && userRole === 'admin'">
-				<text class="label required" >到达时间</text>
-				<uni-datetime-picker  style="width: 100%; height: 80rpx;"
-					type="datetime" return-type='date' v-model="waybillDetail.receiver_time" />
+				<text class="label required">到达时间</text>
+				<uni-datetime-picker style="width: 100%; height: 80rpx;" type="datetime" return-type='date'
+					v-model="waybillDetail.receiver_time" />
 			</view>
-			<view class="info-item"  v-if="waybillDetail.status!=='assigned' && waybillDetail.status!=='auditing'">
-				<text class="label" >到达时间</text>
+			<view class="info-item" v-if="waybillDetail.status!=='assigned' && waybillDetail.status!=='auditing'">
+				<text class="label">到达时间</text>
 				<text class="value">{{formatDate(waybillDetail.receiver_time)}}</text>
 			</view>
 			<view class="info-item">
@@ -231,7 +230,7 @@
 			<template v-if="userRole === 'admin'">
 				<template v-if="waybillDetail.status === 'auditing'||waybillDetail.status === 'approved'">
 					<template v-if="waybillDetail.status === 'auditing'">
-						<button  class="success-btn" @tap="handleApproveAudit">通过审核</button>
+						<button class="success-btn" @tap="handleApproveAudit">通过审核</button>
 					</template>
 					<template v-else>
 						<!-- <button class="primary-btn" @tap="handleViewTrack">查看轨迹</button> -->
@@ -239,8 +238,10 @@
 					</template>
 				</template>
 				<template v-else>
-					<button v-if='userRole === "admin" && waybillDetail.status !== "completed"'class="secondary-btn" @tap="handleGeneratorTrack">生成轨迹</button>
-					<button v-if='waybillDetail.status === "completed"' class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
+					<button v-if='userRole === "admin" && waybillDetail.status !== "completed"' class="secondary-btn"
+						@tap="handleGeneratorTrack">生成轨迹</button>
+					<button v-if='waybillDetail.status === "completed"' class="primary-btn"
+						@tap="handleViewTrack">查看轨迹</button>
 					<button class="primary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
 			</template>
@@ -263,7 +264,8 @@
 		aubmitAudit,
 	} from '@/waybill/api/waybills'
 	import {
-		formatDate,statusMap
+		formatDate,
+		statusMap
 	} from '@/waybill/utils/utils.js'
 	import {
 		onShow
@@ -312,9 +314,9 @@
 				title: '请输入收货地址',
 				icon: 'none'
 			})
-			return false 
+			return false
 		}
-		
+
 		return true
 	}
 	// 司机 - 提交审核
@@ -393,18 +395,16 @@
 			url: `/waybill/pages/weighnote/index?data=${JSON.stringify(toRaw(waybillDetail.value))}&bgid=${bgid.value}`
 		})
 	}
-	
+
 	const handleGeneratorTrack = () => {
 		uni.navigateTo({
-			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}&id=${waybillDetail.value.waybill}&generator=${true}`
+			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}&id=${waybillDetail.value.waybill}&generator=${true}&driver_license_plate=${waybillDetail.value.assignee_info.driver_license_plate}`
 		})
 	}
-
 	// 查看轨迹
 	const handleViewTrack = () => {
 		uni.navigateTo({
-			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}&id=${waybillDetail.value.waybill}
-			&generator=${false}&guiji_distance=${waybillDetail.value.guiji_distance}&guiji_speed=${waybillDetail.value.guiji_speed}&guiji_time=${waybillDetail.value.guiji_time}&status=${waybillDetail.value.status}` 
+			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}&id=${waybillDetail.value.waybill}&generator=${false}&guiji_distance=${waybillDetail.value.guiji_distance}&guiji_speed=${waybillDetail.value.guiji_speed}&guiji_time=${waybillDetail.value.guiji_time}&status=${waybillDetail.value.status}&driver_license_plate=${waybillDetail.value.assignee_info.driver_license_plate}`
 		})
 	}
 
@@ -462,10 +462,10 @@
 						})
 						console.log(waybillDetail.value)
 						const r = {
-							delivery_time:waybillDetail.value.delivery_time,
-							receiver_time:waybillDetail.value.receiver_time
+							delivery_time: waybillDetail.value.delivery_time,
+							receiver_time: waybillDetail.value.receiver_time
 						}
-						const res = await approveWaybill(waybillDetail.value.id,r)
+						const res = await approveWaybill(waybillDetail.value.id, r)
 						if (res.selfErrorCode === 0) {
 							uni.showToast({
 								title: '审核通过',
@@ -525,28 +525,31 @@
 			font-size: 36rpx;
 			color: #1890FF;
 			font-weight: 700;
+
 			&.created {
 				// background: #FFF7E6;
 				color: #FA9D3B;
 			}
-			
+
 			&.assigned {
 				// background: #E6F7FF;
 				color: #1890FF;
 			}
-			
+
 			&.auditing {
 				// background: #d3ffd9;
 				color: #24be29;
 			}
-			
+
 			&.approved {
 				// background: #ffe3f7;
 				color: #a61dff;
 			}
+
 			&.poundageok {
 				color: #240fe5;
 			}
+
 			&.completed {
 				// background: #cafff5;
 				color: #31c6a9;
@@ -559,30 +562,32 @@
 			border-radius: 4rpx;
 			background: #E6F7FF;
 			color: #1890FF;
+
 			&.created {
 				background: #FFF7E6;
 				color: #FA9D3B;
 			}
-			
+
 			&.assigned {
 				background: #E6F7FF;
 				color: #1890FF;
 			}
-			
+
 			&.auditing {
 				background: #d3ffd9;
 				color: #24be29;
 			}
-			
+
 			&.approved {
 				background: #ffe3f7;
 				color: #a61dff;
 			}
+
 			&.poundageok {
 				background: #c2d0f9;
 				color: #240fe5;
 			}
-			
+
 			&.completed {
 				background: #cafff5;
 				color: #31c6a9;

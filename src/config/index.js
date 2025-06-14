@@ -2,7 +2,7 @@
 const ENV = {
     development: {
         // apiBaseUrl: 'https://www.leyoung.xyz', // 开发环境API地址
-		apiBaseUrl: 'https://www.leyoung.xyz',
+		apiBaseUrl: 'https://bm705jd40744.vicp.fun',
 		mapBaseUrl: 'https://www.leyoung.xyz',
         websocketUrl: 'ws://dev-api.example.com', // 开发环境WebSocket地址
 		apiKey:'I6BBZ-7MAOQ-PDW5J-4FWJ2-QNCS6-LLBYU',

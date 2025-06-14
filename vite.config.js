@@ -1,7 +1,9 @@
 import {
 	defineConfig
 } from 'vite'
-import { resolve } from 'path'
+import {
+	resolve
+} from 'path'
 import uni from '@dcloudio/vite-plugin-uni'
 // https://vitejs.dev/config/
 console.log('SCSS 配置已加载');
@@ -13,7 +15,7 @@ export default defineConfig({
 		alias: {
 			'@': resolve(__dirname, 'src'),
 			'pinia': 'pinia/dist/pinia.mjs',
-			'@utils':resolve(__dirname, 'src/utils/')
+			'@utils': resolve(__dirname, 'src/utils/')
 		}
 	},
 	css: {
@@ -21,7 +23,7 @@ export default defineConfig({
 			scss: {
 				api: 'modern-compiler', // 或 "modern"
 				additionalData: `@use "@/styles/_variables.scss" as *;`,
-				
+
 				// additionalData: '@use "@/styles/index.scss" as *;',
 			},
 		},
@@ -29,7 +31,13 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ['pinia']
 	},
-	build:{
-		sourcemap:"inline"
+	build: {
+		minify: 'terser', // 确保使用 terser
+		terserOptions: {
+			compress: {
+				drop_console: true, // 移除所有 console.*
+				drop_debugger: true, // 移除 debugger
+			}
+		}
 	}
 })

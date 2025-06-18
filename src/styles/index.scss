@@ -1,0 +1,30 @@
+@use './variables' as *;
+@use './iconfont';
+
+// 全局样式
+// :root {
+//   --safe-area-inset-bottom: env(safe-area-inset-bottom);
+// }
+
+// 修复小程序按钮默认样式
+button {
+  &::after {
+    border: none;
+  }
+  
+  &[disabled] {
+    opacity: $opacity-disabled !important;
+  }
+}
+
+// 页面通用样式
+page {
+  background-color: $bg-color;
+  font-family: $font-family;
+  color: $text-main;
+  font-size: $font-size-md;
+  line-height: 1.5;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} 

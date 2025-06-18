@@ -1,18 +1,29 @@
 <template>
 	<view class="driver-container">
-		<!-- 顶部搜索区域 -->
+		<!-- 顶部搜索区域和管理按钮 -->
 		<view class="search-section">
 			<view class="search-box">
 				<text class="iconfont icon-search"></text>
 				<input type="text" v-model="searchText" placeholder="搜索司机姓名/电话" placeholder-class="placeholder-style" />
 			</view>
+			<view class="manage-btn" @tap="toggleEditMode">
+				<text>{{ isEditMode ? '完成' : '管理' }}</text>
+			</view>
 		</view>
 
 		<!-- 司机列表 -->
 		<view class="driver-list" v-if="drivers.length > 0">
-			<view class="driver-item" v-for="(item, index) in drivers" :key="index" @tap="handleDriverTap(item)">
+			<view class="driver-item" :class="item.isSelected ? 'active' : ''" v-for=" (item, index) in drivers"
+				:key="item.id || index" @tap="handleDriverTap(item)">
+				<movable-area class="movable-area">
+				<!-- 编辑模式下的复选框 -->
+				<view class="checkbox-wrapper" v-if="isEditMode" @tap.stop="toggleDriverSelection(item)">
+					<text class="iconfont"
+						:class="item.isSelected ? 'icon-checkbox-selected' : 'icon-checkbox-normal'"></text>
+				</view>
+
 				<view class="driver-info">
-					<view class="main-info">
+					<view class=" main-info">
 						<text class="name">{{item.driver_name}}</text>
 						<text class="phone">{{item.phone}}</text>
 					</view>
@@ -21,8 +32,15 @@
 						<text class="value">{{item.driver_license_plate}}</text>
 					</view>
 				</view>
-				<text class="iconfont icon-arrow-right"></text>
+				<!-- 非编辑模式下的单个删除按钮 -->
+				<view class="delete-btn" v-if="!isEditMode" @tap.stop="handleDelete(item.id || index)">
+					<text>删除</text>
+				</view>
+				<!-- 非编辑模式下的右箭头 -->
+				<text class="iconfont icon-arrow-right" v-if="!isEditMode"></text>
+				</movable-area>
 			</view>
+			
 		</view>
 
 		<!-- 空状态 -->
@@ -31,7 +49,20 @@
 			<text class="empty-text">暂无司机信息</text>
 		</view>
 
-		<!-- 添加按钮 -->
+		<!-- 底部操作栏（编辑模式下显示） -->
+		<view class="bottom-actions" v-if="isEditMode">
+			<view class="select-all-wrapper" @tap="selectAllDrivers">
+				<text class="iconfont"
+					:class="isAllSelected ? 'icon-checkbox-selected' : 'icon-checkbox-normal'"></text>
+				<text>全选</text>
+			</view>
+			<button class="action-btn primary-btn" :disabled="selectedDriverIds.length === 0"
+				@tap="deleteSelectedDrivers">
+				删除所选({{ selectedDriverIds.length }})
+			</button>
+		</view>
+
+		<!-- 添加按钮 (保持注释状态，如果你需要取消注释，请注意其fixed定位可能与底部操作栏冲突) -->
 		<!-- <view class="add-btn" @tap="handleAddDriver">
 			<text class="iconfont icon-add"></text>
 			<text>添加司机</text>
@@ -42,7 +73,8 @@
 <script setup>
 	import {
 		ref,
-		onMounted
+		onMounted,
+		computed
 	} from 'vue'
 	import {
 		getDriverInfo
@@ -51,39 +83,161 @@
 		useDirvers
 	} from '@/waybill/composables/driver.js'
 
-
 	const {
 		getDriverList,
 		drivers
 	} = useDirvers();
 
 	const searchText = ref('')
+	const isEditMode = ref(false) // 是否处于编辑模式
+	const selectedDriverIds = ref([]) // 存储选中司机的ID
+
+	// 计算属性：是否全选
+	const isAllSelected = computed(() => {
+		return drivers.value.length > 0 && selectedDriverIds.value.length === drivers.value.length
+	})
 
 	const handleDriverTap = (driver) => {
-		console.log('点击司机:', driver)
-		// 可以跳转到司机详情页
+		if (isEditMode.value) {
+			toggleDriverSelection(driver)
+		} else {
+			console.log('点击司机:', driver)
+			// 可以跳转到司机详情页
+		}
 	}
 
-	// const fetchDiriverList = async () => {
-	// 	try {
-	// 		const res = await getDriverInfo()
-	// 		console.log(res)
-	// 		drivers.value = res.data
+	// 切换编辑模式
+	const toggleEditMode = () => {
+		isEditMode.value = !isEditMode.value
+		// 进入编辑模式时，清除所有选中状态
+		if (isEditMode.value) {
+			selectedDriverIds.value = []
+			drivers.value.forEach(driver => {
+				driver.isSelected = false
+			})
+		}
+	}
 
-	// 	} catch (e) {
-	// 		uni.showToast({
-	// 			title: '获取司机列表失败',
-	// 			icon: 'none'
-	// 		})
-	// 	}
-	// }
+	// 切换司机选中状态
+	const toggleDriverSelection = (driver) => {
+		const id = driver.id || driver.phone; // 使用id或phone作为唯一标识，如果后端返回id则优先使用
+		if (!id) {
+			console.warn("Driver item missing unique ID for selection.", driver);
+			return;
+		}
+
+		const index = selectedDriverIds.value.indexOf(id);
+		if (index > -1) {
+			selectedDriverIds.value.splice(index, 1);
+			driver.isSelected = false;
+		} else {
+			selectedDriverIds.value.push(id);
+			driver.isSelected = true;
+		}
+	}
+
+	// 全选/全不选
+	const selectAllDrivers = () => {
+		if (isAllSelected.value) {
+			selectedDriverIds.value = []
+			drivers.value.forEach(driver => {
+				driver.isSelected = false
+			})
+		} else {
+			selectedDriverIds.value = drivers.value.map(driver => driver.id || driver.phone);
+			drivers.value.forEach(driver => {
+				driver.isSelected = true
+			})
+		}
+	}
+
+	// 删除单个司机
+	const handleDelete = (idOrIndex) => {
+		uni.showModal({
+			title: '提示',
+			content: '确定要删除该司机吗？',
+			success: (res) => {
+				if (res.confirm) {
+					// 假设idOrIndex是唯一的司机ID
+					const initialLength = drivers.value.length;
+					drivers.value = drivers.value.filter(driver => (driver.id || driver.phone) !==
+						idOrIndex);
+					if (drivers.value.length < initialLength) {
+						uni.showToast({
+							title: '删除成功',
+							icon: 'success'
+						});
+					} else {
+						uni.showToast({
+							title: '未找到匹配项或删除失败',
+							icon: 'none'
+						});
+					}
+					// TODO: 调用后端API删除
+				}
+			}
+		});
+	}
+
+	// 删除所选司机
+	const deleteSelectedDrivers = () => {
+		if (selectedDriverIds.value.length === 0) {
+			uni.showToast({
+				title: '请选择要删除的司机',
+				icon: 'none'
+			});
+			return;
+		}
+
+		uni.showModal({
+			title: '提示',
+			content: `确定要删除选中的${selectedDriverIds.value.length}位司机吗？`,
+			success: (res) => {
+				if (res.confirm) {
+					const idsToDelete = new Set(selectedDriverIds.value);
+					const initialLength = drivers.value.length;
+					drivers.value = drivers.value.filter(driver => !idsToDelete.has(driver.id || driver
+						.phone));
+
+					if (drivers.value.length < initialLength) {
+						uni.showToast({
+							title: '删除成功',
+							icon: 'success'
+						});
+					} else {
+						uni.showToast({
+							title: '删除失败',
+							icon: 'none'
+						});
+					}
+					selectedDriverIds.value = []; // 清空选中
+					isEditMode.value = false; // 退出编辑模式
+					// TODO: 调用后端API批量删除
+				}
+			}
+		});
+	}
+
+	// 模拟数据初始化时给每个司机添加一个id和isSelected属性
+	onMounted(async () => {
+		await getDriverList(); // 获取司机列表
+		if (drivers.value && drivers.value.length > 0) {
+			// 确保每个司机都有一个唯一的id，这里假设driver_name和phone的组合是唯一的
+			// 实际项目中应由后端提供唯一ID
+			drivers.value = drivers.value.map((driver, index) => ({
+				...driver,
+				id: driver.id || `${driver.driver_name}-${driver.phone}-${index}`, // 如果没有id，则生成一个
+				isSelected: false
+			}));
+		}
+	})
 
 	const handleAddDriver = () => {
 		uni.navigateTo({
 			url: '/pages/driver/add'
 		})
 	}
-	getDriverList()
+	// getDriverList() // 已在onMounted中调用
 </script>
 
 <style lang="scss">
@@ -93,7 +247,7 @@
 	.driver-container {
 		min-height: 100vh;
 		background-color: $bg-color;
-		padding-bottom: 120rpx; // 为悬浮按钮留出空间
+		padding-bottom: 0; // 底部操作栏会覆盖，所以这里不用留出空间
 	}
 
 	.search-section {
@@ -102,14 +256,18 @@
 		position: sticky;
 		top: 0;
 		z-index: 1;
+		display: flex; // 使用flex布局
+		align-items: center; // 垂直居中
 
 		.search-box {
+			flex: 1; // 搜索框占据剩余空间
 			display: flex;
 			align-items: center;
 			height: 72rpx;
 			background: $bg-color;
 			border-radius: $radius-lg;
 			padding: 0 $spacing-md;
+			margin-right: $spacing-sm; // 与管理按钮的间距
 
 			.icon-search {
 				font-size: 36rpx;
@@ -123,6 +281,15 @@
 				font-size: $font-size-md;
 			}
 		}
+
+		.manage-btn {
+			padding: 0 $spacing-sm;
+			font-size: $font-size-md;
+			color: $default-color;
+			// 确保点击区域足够
+			height: 72rpx;
+			line-height: 72rpx;
+		}
 	}
 
 	.placeholder-style {
@@ -131,18 +298,44 @@
 
 	.driver-list {
 		margin-top: $spacing-sm;
-		background-color: $bg-white;
+		padding-bottom: constant(safe-area-inset-bottom); // 适配底部安全区域
+		padding-bottom: env(safe-area-inset-bottom); // 适配底部安全区域
 
 		.driver-item {
 			display: flex;
+
+			background-color: $bg-white;
+			margin-top: $spacing-sm;
 			align-items: center;
-			justify-content: space-between;
 			padding: $spacing-lg;
 			border-bottom: 1rpx solid $border-color;
+			width: 100%; // 确保占满宽度，解决“叠在一起”问题
+			box-sizing: border-box; // 包含padding在内
+
+			&.active {
+				background-color: $bg-color;
+			}
+			.movable-area{
+				width: 100%;
+				height: 100%;
+			}
+			.checkbox-wrapper {
+				padding-right: $spacing-md; // 复选框与内容的间距
+
+				.icon-checkbox-normal {
+					font-size: 44rpx; // 假设iconfont大小
+					color: $text-light;
+				}
+
+				.icon-checkbox-selected {
+					font-size: 44rpx;
+					color: $default-color; // 选中颜色
+				}
+			}
 
 			.driver-info {
-				flex: 1;
-				margin-right: $spacing-md;
+				flex: 1; // 信息区域占据剩余空间
+				margin-right: $spacing-md; // 与删除按钮的间距
 
 				.main-info {
 					display: flex;
@@ -179,9 +372,20 @@
 				}
 			}
 
+			.delete-btn {
+				background-color: $default-color; // 使用你的默认主题色作为删除按钮背景
+				color: white;
+				padding: 10rpx 20rpx;
+				border-radius: $radius-sm;
+				font-size: $font-size-sm;
+				flex-shrink: 0; // 不会缩小
+			}
+
 			.icon-arrow-right {
 				font-size: 32rpx;
 				color: $text-light;
+				margin-left: $spacing-sm; // 与删除按钮或内容间距
+				flex-shrink: 0; // 不会缩小
 			}
 
 			&:active {
@@ -208,33 +412,62 @@
 		}
 	}
 
-	.add-btn {
+	.bottom-actions {
 		position: fixed;
-		bottom: $spacing-lg;
-		left: 50%;
-		transform: translateX(-50%);
+		bottom: 0;
+		left: 0;
+		right: 0;
 		display: flex;
+		justify-content: space-between;
 		align-items: center;
-		justify-content: center;
-		width: 90%;
-		height: 88rpx;
-		background: $primary-gradient;
-		border-radius: $radius-lg;
-		box-shadow: 0 4rpx 16rpx rgba($primary-color, 0.3);
+		padding: $spacing-md $spacing-lg;
+		background-color: $bg-white;
+		border-top: 1rpx solid $border-color;
+		box-shadow: $shadow-1-up; // 如果有向上阴影的变量
+		padding-bottom: calc($spacing-md + constant(safe-area-inset-bottom)); // 适配底部安全区域
+		padding-bottom: calc($spacing-md + env(safe-area-inset-bottom)); // 适配底部安全区域
+		z-index: 10;
 
-		.icon-add {
-			font-size: 40rpx;
-			color: $text-white;
-			margin-right: $spacing-sm;
+		.select-all-wrapper {
+			display: flex;
+			align-items: center;
+			font-size: $font-size-md;
+			color: $text-main;
+
+			.iconfont {
+				font-size: 44rpx;
+				margin-right: $spacing-sm;
+
+				&.icon-checkbox-normal {
+					color: $text-light;
+				}
+
+				&.icon-checkbox-selected {
+					color: $default-color;
+				}
+			}
 		}
 
-		text {
-			color: $text-white;
+		.action-btn {
+			height: 80rpx; // 统一按钮高度
+			line-height: 80rpx;
 			font-size: $font-size-lg;
-		}
+			padding: 0 60rpx;
+			border-radius: $radius-lg;
+			color: $text-white;
+			background-color: $default-color; // 删除按钮的背景色
+			border: none;
 
-		&:active {
-			opacity: $opacity-hover;
+			&.primary-btn {
+				background-color: $primary-color; // 确保使用主题色，或者直接用$default-color
+				color: $text-white;
+			}
+
+			&[disabled] {
+				opacity: 0.6;
+				background-color: #ccc; // 禁用按钮的背景色
+				color: #ccc; // 禁用按钮的文字颜色
+			}
 		}
 	}
 </style>

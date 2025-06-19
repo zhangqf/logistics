@@ -1,11 +1,11 @@
 <template>
 	<view class="verify-container">
 		<view class="form-container">
+			
 			<view class="form-item">
 				<text class="label required">姓名</text>
 				<input class="input" type="text" v-model="formData.name" placeholder="请输入真实姓名" :disabled="isApproved" />
 			</view>
-
 			<view class="form-item">
 				<text class="label required">身份证号</text>
 				<input class="input" type="idcard" v-model="formData.idCard" placeholder="请输入身份证号码"
@@ -15,6 +15,12 @@
 			<view class="form-item" v-if="userRole === 'driver'">
 				<text class="label required">车牌号</text>
 				<input class="input" type="text" v-model="formData.licensePlate" placeholder="请输入车牌号"
+					:disabled="isApproved" />
+			</view>
+
+			<view v-if="userRole === 'driver'" class="form-item">
+				<text class="label required">区域</text>
+				<input @tap="handlePopup" class="input" type="text" v-model="formData.region_name" placeholder="请选择区域"
 					:disabled="isApproved" />
 			</view>
 
@@ -28,6 +34,7 @@
 			<button v-if="!isApproved" class="submit-btn" @click="handleSubmit">提交认证</button>
 		</view>
 	</view>
+	<Popup v-if='showPopup' @confirm='confirm' @cancel='showPopup = false' title='选择区域' :data='regions'/>
 </template>
 
 <script>
@@ -40,8 +47,16 @@
 	import {
 		useUserStore
 	} from '@/stores/user'
+	import Popup from '@/waybill/components/Popup'
+	import {
+		useRegions
+	} from '@/waybill/composables/regions.js'
+
 
 	export default {
+		 components: {
+		    Popup
+		  },
 		setup() {
 			const userStore = useUserStore()
 			const userRole = ref(userStore.userInfo?.role || '')
@@ -49,8 +64,16 @@
 			const formData = ref({
 				name: userStore.userInfo?.auth_info?.real_name || '',
 				idCard: userStore.userInfo?.auth_info?.id_card || '',
-				licensePlate: userStore.userInfo?.auth_info?.license_plate || ''
+				licensePlate: userStore.userInfo?.auth_info?.license_plate || '',
+				region: '',
+				region_name:userStore.userInfo?.auth_info?.license_plate||''
 			})
+			const showPopup = ref(false)
+			const selectedRegion = ref()
+			const {
+				getRegionsList,
+				regions
+			} = useRegions()
 
 			const validateIdCard = (idCard) => {
 				const reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
@@ -61,7 +84,17 @@
 				const reg = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-Z0-9]{4,5}[A-Z0-9挂学警港澳]$/
 				return reg.test(licensePlate)
 			}
-
+			const popup = ref()
+			const handlePopup = () => {
+				if(isApproved) return
+				showPopup.value = true
+			}
+			const confirm = (data) => {
+				console.log(data.value.id)
+				formData.value.region = data.value.id
+				formData.value.region_name = data.value.name
+				showPopup.value = false
+			}
 			const handleSubmit = async () => {
 				// 如果已认证，不允许提交
 				if (isApproved.value) {
@@ -111,6 +144,13 @@
 						})
 						return
 					}
+					if(!formData.value.region){
+						uni.showToast({
+							title: '请选择地区',
+							icon: 'none'
+						})
+						return
+					}
 				}
 
 				try {
@@ -119,10 +159,11 @@
 						real_name: formData.value.name,
 						id_card: formData.value.idCard,
 						...(userRole.value === 'driver' ? {
-							license_plate: formData.value.licensePlate
+							license_plate: formData.value.licensePlate,
+							region:  formData.value.region,
 						} : {})
 					}
-
+					console.log(submitData)
 					const res = await verifyIdentity(submitData)
 					console.log(res)
 					if (res.selfErrorCode === 0) {
@@ -130,12 +171,12 @@
 						userStore.updateUserInfo({
 							...userStore.userInfo,
 							is_approved: true,
-							auth_info:{
+							auth_info: {
 								real_name: formData.value.name,
 								id_card: formData.value.idCard,
 								license_plate: formData.value.licensePlate
 							}
-							
+
 						})
 
 						uni.showToast({
@@ -160,11 +201,18 @@
 				}
 			}
 
+			getRegionsList()
+
 			return {
+				showPopup,
+				regions,
 				formData,
 				userRole,
 				isApproved,
-				handleSubmit
+				handleSubmit,
+				getRegionsList,
+				handlePopup,
+				confirm
 			}
 		}
 	}
@@ -186,7 +234,7 @@
 
 			.form-item {
 				margin-bottom: $spacing-lg;
-
+				box-sizing:content-box;
 				.label {
 					display: block;
 					font-size: $font-size-md;
@@ -201,7 +249,7 @@
 				}
 
 				.input {
-					width: 100%;
+					// width: 100%;
 					height: 88rpx;
 					border: 2rpx solid $border-color;
 					border-radius: $radius-sm;
@@ -260,4 +308,5 @@
 			}
 		}
 	}
+	
 </style>

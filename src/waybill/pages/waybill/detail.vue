@@ -232,6 +232,7 @@
 					<template v-if="waybillDetail.status === 'auditing'">
 						<button class="success-btn" @tap="handleApproveAudit">通过审核</button>
 					</template>
+
 					<template v-else>
 						<!-- <button class="primary-btn" @tap="handleViewTrack">查看轨迹</button> -->
 						<button class="secondary-btn" @tap="handleGenerateWeighNote">生成磅单</button>
@@ -689,6 +690,7 @@
 		justify-content: space-between;
 		box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.05);
 		z-index: 10;
+		
 
 		button {
 			flex: 1;
@@ -697,6 +699,7 @@
 			font-size: 28rpx;
 			border-radius: 4rpx;
 			margin: 0;
+			
 
 			&+button {
 				margin-left: 20rpx;

@@ -2,9 +2,9 @@
 	<view class="driver-container">
 		<!-- 顶部搜索区域和管理按钮 -->
 		<view class="search-section">
-			<view class="search-box">
+			<view class="search-box" @tap="handleSearch">
 				<text class="iconfont icon-search"></text>
-				<input type="text" v-model="searchText" placeholder="搜索司机姓名/电话" placeholder-class="placeholder-style" />
+				<text>{{searchText}}</text>
 			</view>
 			<view class="manage-btn" @tap="toggleEditMode">
 				<text>{{ isEditMode ? '完成' : '管理' }}</text>
@@ -15,7 +15,7 @@
 		<view class="driver-list" v-if="drivers.length > 0">
 			<view class="driver-item" :class="item.isSelected ? 'active' : ''" v-for=" (item, index) in drivers"
 				:key="item.id || index" @tap="handleDriverTap(item)">
-				<movable-area class="movable-area">
+				<!-- <movable-area class="movable-area"> -->
 				<!-- 编辑模式下的复选框 -->
 				<view class="checkbox-wrapper" v-if="isEditMode" @tap.stop="toggleDriverSelection(item)">
 					<text class="iconfont"
@@ -33,14 +33,14 @@
 					</view>
 				</view>
 				<!-- 非编辑模式下的单个删除按钮 -->
-				<view class="delete-btn" v-if="!isEditMode" @tap.stop="handleDelete(item.id || index)">
+				<view class="delete-btn" v-if="!isEditMode" @tap.stop="handleDelete(item.id)">
 					<text>删除</text>
 				</view>
 				<!-- 非编辑模式下的右箭头 -->
 				<text class="iconfont icon-arrow-right" v-if="!isEditMode"></text>
-				</movable-area>
+				<!-- </movable-area> -->
 			</view>
-			
+
 		</view>
 
 		<!-- 空状态 -->
@@ -68,6 +68,7 @@
 			<text>添加司机</text>
 		</view> -->
 	</view>
+	<Filter v-if="isSearch" title='搜索司机' @reset='resetSearch' @cancel='isSearch = false' @confirm='confrim' />
 </template>
 
 <script setup>
@@ -77,18 +78,25 @@
 		computed
 	} from 'vue'
 	import {
-		getDriverInfo
+		deleteDriver,
+		bulkDeleteDriver
 	} from '@/waybill/api/driver.js'
+
+	import Filter from '@/waybill/components/Filter.vue'
+
 	import {
 		useDirvers
 	} from '@/waybill/composables/driver.js'
+	import {
+		driverSearchMap
+	} from '@/waybill/utils/utils.js'
 
 	const {
 		getDriverList,
 		drivers
 	} = useDirvers();
 
-	const searchText = ref('')
+	const searchText = ref('搜索')
 	const isEditMode = ref(false) // 是否处于编辑模式
 	const selectedDriverIds = ref([]) // 存储选中司机的ID
 
@@ -96,6 +104,32 @@
 	const isAllSelected = computed(() => {
 		return drivers.value.length > 0 && selectedDriverIds.value.length === drivers.value.length
 	})
+	const isSearch = ref(false)
+
+	const handleSearch = () => {
+		isSearch.value = true
+	}
+	const confrim = async (data) => {
+		isSearch.value = false
+		const keys = Object.keys(data)
+		if (keys.length > 0) {
+			let text = ''
+			keys.forEach(v => {
+				text += driverSearchMap[v] + ":" + data[v] + ';'
+			})
+			console.log(text)
+			searchText.value = text
+		} else {
+			searchText.value = '搜索'
+		}
+		await getDriverList(data)
+	}
+
+	const resetSearch = async () => {
+		isSearch.value = false
+		searchText.value = '搜索'
+		await getDriverList()
+	}
 
 	const handleDriverTap = (driver) => {
 		if (isEditMode.value) {
@@ -152,27 +186,47 @@
 	}
 
 	// 删除单个司机
-	const handleDelete = (idOrIndex) => {
+	const handleDelete = (id) => {
 		uni.showModal({
 			title: '提示',
 			content: '确定要删除该司机吗？',
-			success: (res) => {
+			success: async (res) => {
 				if (res.confirm) {
 					// 假设idOrIndex是唯一的司机ID
-					const initialLength = drivers.value.length;
-					drivers.value = drivers.value.filter(driver => (driver.id || driver.phone) !==
-						idOrIndex);
-					if (drivers.value.length < initialLength) {
+					console.log(id)
+					uni.showLoading({
+						title: '删除中...'
+					})
+					try {
+						const res = await deleteDriver(id)
+						console.log(res)
 						uni.showToast({
-							title: '删除成功',
-							icon: 'success'
-						});
-					} else {
+							title: "操作成功"
+						})
+						await getDriverList()
+					} catch (e) {
+						//TODO handle the exception
 						uni.showToast({
-							title: '未找到匹配项或删除失败',
-							icon: 'none'
-						});
+							title: '操作失败'
+						})
+					} finally {
+						uni.hideLoading()
 					}
+
+					// const initialLength = drivers.value.length;
+					// drivers.value = drivers.value.filter(driver => (driver.id || driver.phone) !==
+					// 	idOrIndex);
+					// if (drivers.value.length < initialLength) {
+					// 	uni.showToast({
+					// 		title: '删除成功',
+					// 		icon: 'success'
+					// 	});
+					// } else {
+					// 	uni.showToast({
+					// 		title: '未找到匹配项或删除失败',
+					// 		icon: 'none'
+					// 	});
+					// }
 					// TODO: 调用后端API删除
 				}
 			}
@@ -188,31 +242,39 @@
 			});
 			return;
 		}
-
 		uni.showModal({
 			title: '提示',
 			content: `确定要删除选中的${selectedDriverIds.value.length}位司机吗？`,
-			success: (res) => {
+			success: async (res) => {
 				if (res.confirm) {
 					const idsToDelete = new Set(selectedDriverIds.value);
 					const initialLength = drivers.value.length;
-					drivers.value = drivers.value.filter(driver => !idsToDelete.has(driver.id || driver
-						.phone));
-
-					if (drivers.value.length < initialLength) {
+					// drivers.value = drivers.value.filter(driver => !idsToDelete.has(driver.id || driver
+					// 	.phone));
+					console.log(idsToDelete)
+					const r = Array.from(idsToDelete)
+					
+					uni.showLoading({
+						title: '删除中...'
+					})
+					try {
+						const data = {ids: r}
+						const res = await bulkDeleteDriver(data)
 						uni.showToast({
-							title: '删除成功',
-							icon: 'success'
-						});
-					} else {
+							title: "操作成功"
+						})
+						await getDriverList()
+					} catch (e) {
+						//TODO handle the exception
 						uni.showToast({
-							title: '删除失败',
-							icon: 'none'
-						});
+							title: '操作失败'
+						})
+					} finally {
+						uni.hideLoading()
 					}
+
 					selectedDriverIds.value = []; // 清空选中
 					isEditMode.value = false; // 退出编辑模式
-					// TODO: 调用后端API批量删除
 				}
 			}
 		});
@@ -221,15 +283,6 @@
 	// 模拟数据初始化时给每个司机添加一个id和isSelected属性
 	onMounted(async () => {
 		await getDriverList(); // 获取司机列表
-		if (drivers.value && drivers.value.length > 0) {
-			// 确保每个司机都有一个唯一的id，这里假设driver_name和phone的组合是唯一的
-			// 实际项目中应由后端提供唯一ID
-			drivers.value = drivers.value.map((driver, index) => ({
-				...driver,
-				id: driver.id || `${driver.driver_name}-${driver.phone}-${index}`, // 如果没有id，则生成一个
-				isSelected: false
-			}));
-		}
 	})
 
 	const handleAddDriver = () => {
@@ -237,7 +290,6 @@
 			url: '/pages/driver/add'
 		})
 	}
-	// getDriverList() // 已在onMounted中调用
 </script>
 
 <style lang="scss">
@@ -298,8 +350,8 @@
 
 	.driver-list {
 		margin-top: $spacing-sm;
-		padding-bottom: constant(safe-area-inset-bottom); // 适配底部安全区域
-		padding-bottom: env(safe-area-inset-bottom); // 适配底部安全区域
+		padding-bottom: calc($list-content-middle + constant(safe-area-inset-bottom)); // 适配底部安全区域
+		padding-bottom: calc($list-content-middle + env(safe-area-inset-bottom)); // 适配底部安全区域
 
 		.driver-item {
 			display: flex;
@@ -313,12 +365,14 @@
 			box-sizing: border-box; // 包含padding在内
 
 			&.active {
-				background-color: $bg-color;
+				background-color: $select-item-bg-color;
 			}
-			.movable-area{
+
+			.movable-area {
 				width: 100%;
 				height: 100%;
 			}
+
 			.checkbox-wrapper {
 				padding-right: $spacing-md; // 复选框与内容的间距
 
@@ -389,7 +443,7 @@
 			}
 
 			&:active {
-				background-color: $bg-color;
+				background-color: $select-item-bg-color;
 			}
 		}
 	}
@@ -470,4 +524,5 @@
 			}
 		}
 	}
+
 </style>

@@ -146,6 +146,7 @@
 			uni.navigateTo({
 				url: '/waybill/pages/verify/verify'
 			})
+			return
 		}
 		if(!userStore.userInfo.is_approved) {
 			uni.showToast({

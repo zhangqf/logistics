@@ -1,9 +1,25 @@
 <template>
 	<view class="waybill-list">
-
+		<!-- 顶部搜索区域和管理按钮 -->
+		<view class="search-section">
+			<!-- <view class="search-box" @tap="handleSearch"> -->
+			<view class="search-box" @tap="handleSearch">
+				<text class="iconfont icon-search"></text>
+				<!-- <text>{{searchText}}</text> -->
+				<uni-data-select style="width:100%; height:72rpx;line-height: 72rpx; font-size: 32rpx;"
+					v-model="searchRegion" :localdata="selectRegionsList" placeholder='请选择地区'></uni-data-select>
+			</view>
+			<view v-if="userRole==='admin'" class="manage-btn" @tap="toggleEditMode">
+				<text>{{ isEditMode ? '完成' : '管理' }}</text>
+			</view>
+		</view>
 		<!-- 列表 -->
 		<scroll-view scroll-y class="list-container" @scrolltoupper="loadMore">
-			<view class="waybill-item" v-for="item in waybillList" :key="item.id" @tap="showDetail(item)">
+			<view class="" style="width: 100%; height: 130rpx;">
+
+			</view>
+			<view class="waybill-item" :class="item.isSelected ? 'active' : ''" v-for="item in waybillList"
+				:key="item.id" @tap="showDetail(item)">
 				<view class="waybill-header">
 					<view style="display: flex; align-items: center;"><text class="iconfont"
 							style="font-size: 48rpx;margin-right: 18rpx; color: #1623ad;">&#xe672;</text><text
@@ -36,7 +52,7 @@
 					</text>
 				</view>
 			</view>
-			<view class="" style="width: 100%; height: 150rpx;">
+			<view class="" style="width: 100%; height: 300rpx;">
 
 			</view>
 			<!-- 加载更多 -->
@@ -49,16 +65,35 @@
 		<view v-if="userRole!=='driver'" class="add-btn" @tap="goToAdd">
 			<text class="icon iconfont">&#xe727;</text>
 		</view>
+	</view>
+	<!-- 底部操作栏（编辑模式下显示） -->
+	<view class="bottom-actions" v-if="isEditMode">
+		<view class="select-all-wrapper" @tap="selectAllWaybills">
+			<text class="iconfont" :class="isAllSelected ? 'icon-checkbox-selected' : 'icon-checkbox-normal'"></text>
+			<text>全选</text>
+		</view>
+		<button class="action-btn primary-btn" :disabled="selectedWaybills.length === 0" @tap="deleteSelectedWaybills">
+			删除所选({{ selectedWaybills.length }})
+		</button>
+	</view>
+	<!-- 司机选择弹窗 -->
+	<view class="popup-mask" v-if="showDriverPopup" @tap="closeDriverPopup"></view>
+	<view class="driver-popup" v-if="showDriverPopup">
+		<view class="popup-header">
+			<text class="title">选择司机</text>
+			<text class="close-btn" @tap="closeDriverPopup">×</text>
+		</view>
 
-		<!-- 司机选择弹窗 -->
-		<view class="popup-mask" v-if="showDriverPopup" @tap="closeDriverPopup"></view>
-		<view class="driver-popup" v-if="showDriverPopup">
-			<view class="popup-header">
-				<text class="title">选择司机</text>
-				<text class="close-btn" @tap="closeDriverPopup">×</text>
+		<view class="" style="width: 700rpx;margin:20rpx auto">
+			<text>选择地区</text>
+			<view style="margin: 10rpx 0;">
+				<uni-data-select style="width:100%; height:100rpx;line-height: 100rpx; font-size: 32rpx;"
+					v-model="selectRegion" :localdata="selectRegionsList" placeholder='请选择地区'></uni-data-select>
+
 			</view>
-
-			<scroll-view scroll-y class="driver-list">
+		</view>
+		<scroll-view scroll-y class="driver-list">
+			<view v-if="drivers.length > 0" class="">
 				<view class="driver-item" v-for="driver in drivers" :key="driver.id"
 					:class="{ active: selectedDriver?.id === driver.id }" @tap="selectDriver(driver)">
 					<!-- <image class="avatar" :src="driver.avatar" mode="aspectFill"></image> -->
@@ -73,44 +108,60 @@
 				</view>
 				<view class="driver-item empty">
 				</view>
-			</scroll-view>
-
-			<view class="footer">
-				<view class="popup-footer">
-					<button class="cancel-btn" @tap="closeDriverPopup">
-						取消
-					</button>
-					<button class="confirm-btn" @tap="handleAssignDriver" :disabled="!selectedDriver">
-						确认分配
-					</button>
+			</view>
+			<view v-else class="driver-item empty" style="display:block;text-align: center;">
+				<text class="tips">请选择或切换地区</text>
+				<view class="">
+					暂无数据...,
 				</view>
+			</view>
+		</scroll-view>
+
+		<view class="footer">
+			<view class="popup-footer">
+				<button class="cancel-btn" @tap="closeDriverPopup">
+					取消
+				</button>
+				<button class="confirm-btn" @tap="handleAssignDriver" :disabled="!selectedDriver">
+					确认分配
+				</button>
 			</view>
 		</view>
 	</view>
+	<Filter v-if="isSearch" title='搜索运单' @reset='resetSearch' @cancel='isSearch = false' @confirm='confrim' />
 </template>
 
 <script setup>
 	import {
 		ref,
-		onMounted
+		onMounted,
+		computed,
+		watch
 	} from 'vue'
 	import config from '@/config'
+	import Filter from '@/waybill/components/Filter.vue'
 
 	import {
 		getWaybills,
-		assignWaybills
+		assignWaybills,
+		bulkDeleteDriver
 	} from '@/waybill/api/waybills.js'
 	import {
 		useDirvers
 	} from '@/waybill/composables/driver.js'
+	import {
+		useRegions
+	} from '@/waybill/composables/regions.js'
 	import {
 		useUserStore
 	} from '@/stores/user'
 	import {
 		onShow
 	} from '@dcloudio/uni-app'
-	
-	import {statusMap} from '@/waybill/utils/utils.js'
+
+	import {
+		statusMap
+	} from '@/waybill/utils/utils.js'
 
 
 
@@ -123,20 +174,26 @@
 
 	const userRole = ref(userStore.userInfo?.role || '')
 
-	// 状态映射
-	
+	// 区域
+	const {
+		getRegionsList,
+		selectRegionsList,
+		regions
+	} = useRegions()
 
 	// 列表数据
 	const waybillList = ref([])
 	const page = ref(1)
 	const pageSize = 10
 	const hasMore = ref(true)
+	const searchRegion = ref('')
 
 	// 司机选择相关
 	const showDriverPopup = ref(false)
 	const driverList = ref([])
 	const selectedDriver = ref(null)
 	const currentWaybill = ref(null)
+	const selectRegion = ref()
 
 	// 格式化日期
 	const formatDate = (dateString) => {
@@ -148,6 +205,10 @@
 	const showDetail = (waybill) => {
 		console.log(waybill)
 		console.log('waybill')
+		if (isEditMode.value) {
+			toggleWaybillSelection(waybill)
+			return
+		}
 		if (!waybill.detail_info) {
 			return
 		}
@@ -165,19 +226,19 @@
 			})
 			return
 		}
-		
+
 		uni.navigateTo({
 			url: `/waybill/pages/waybill/detail?id=${waybill.detail_info.id}&bgid=${waybill.sender_company}`
 		})
 	}
 
 	// 获取运单列表
-	const fetchWaybillList = async (isRefresh = false) => {
+	const fetchWaybillList = async (data) => {
 		try {
 			uni.showLoading({
 				title: '获取运单列表'
 			})
-			const res = await getWaybills()
+			const res = await getWaybills(data)
 			waybillList.value = res.data
 			uni.hideLoading()
 		} catch (error) {
@@ -190,9 +251,49 @@
 
 	// 加载更多
 	const loadMore = () => {
-		console.log("阿萨德噶傻大个")
+		if (isEditMode.value) return
 		if (hasMore.value) {
 			fetchWaybillList()
+		}
+	}
+
+	watch(selectRegion, (newVal) => {
+		const r = selectRegionsList.value.filter(v => v.value === newVal)
+		if (r.length > 0) {
+			getDriverList({
+				region: r[0].text
+			})
+			return
+		}
+		waybill.value = []
+	})
+	watch(searchRegion, (newVal) => {
+		const r = selectRegionsList.value.filter(v => v.value === newVal)
+		if (r.length > 0) {
+			fetchWaybillList({
+				region: r[0].text
+			})
+			return
+		} 
+		fetchWaybillList()
+	})
+	
+	
+	// 切换司机选中状态
+	const toggleWaybillSelection = (waybill) => {
+		const id = waybill.id;
+		if (!id) {
+			console.warn("Driver item missing unique ID for selection.", driver);
+			return;
+		}
+
+		const index = selectedWaybills.value.indexOf(id);
+		if (index > -1) {
+			selectedWaybills.value.splice(index, 1);
+			waybill.isSelected = false;
+		} else {
+			selectedWaybills.value.push(id);
+			waybill.isSelected = true;
 		}
 	}
 
@@ -201,7 +302,7 @@
 		currentWaybill.value = waybill
 		selectedDriver.value = null
 		showDriverPopup.value = true
-		getDriverList()
+
 	}
 
 	// 关闭司机选择弹窗
@@ -231,14 +332,6 @@
 				waybill_id: currentWaybill.value.id,
 				driver_id: selectedDriver.value.id
 			})
-			// const res = await uni.request({
-			// 	url: `${config.apiBaseUrl}/api/waybill/assign`,
-			// 	method: 'POST',
-			// 	data: {
-			// 		waybillId: currentWaybill.value.id,
-			// 		driverId: selectedDriver.value.id
-			// 	}
-			// })
 
 
 			if (res.data.selfErrorCode === 0) {
@@ -247,7 +340,7 @@
 					icon: 'success'
 				})
 				closeDriverPopup()
-				fetchWaybillList(true)
+				fetchWaybillList()
 			} else {
 				throw new Error(res.data.message || '分配失败')
 			}
@@ -268,10 +361,125 @@
 		})
 	}
 
+	/***********搜索***************/
+	const isSearch = ref(false)
+	const isEditMode = ref(false)
+	const selectedWaybills = ref([])
+	const searchText = ref('搜索')
+	const handleSearch = () => {
+		// isSearch.value = true
+		
+	}
+	// 计算属性：是否全选
+	const isAllSelected = computed(() => {
+		return drivers.value.length > 0 && selectedWaybills.value.length === drivers.value.length
+	})
+	const resetSearch = async () => {
+		isSearch.value = false
+		searchText.value = '搜索'
+		await getDriverList()
+	}
+	const confrim = async (data) => {
+		isSearch.value = false
+		const keys = Object.keys(data)
+		if (keys.length > 0) {
+			let text = ''
+			keys.forEach(v => {
+				text += driverSearchMap[v] + ":" + data[v] + ';'
+			})
+			console.log(text)
+			searchText.value = text
+		} else {
+			searchText.value = '搜索'
+		}
+		await getDriverList(data)
+	}
+	// 切换编辑模式
+	const toggleEditMode = () => {
+		isEditMode.value = !isEditMode.value
+		// 进入编辑模式时，清除所有选中状态
+		if (isEditMode.value) {
+			selectedWaybills.value = []
+			waybillList.value.forEach(waybill => {
+				waybill.isSelected = false
+			})
+		}
+	}
+
+	// 全选/全不选
+	const selectAllWaybills = () => {
+		if (isAllSelected.value) {
+			selectedWaybills.value = []
+			waybillList.value.forEach(waybill => {
+				waybill.isSelected = false
+			})
+		} else {
+			selectedWaybills.value = waybillList.value.map(waybill => waybill.id);
+			waybillList.value.forEach(waybill => {
+				waybill.isSelected = true
+			})
+		}
+	}
+
+
+
+
+	const deleteSelectedWaybills = () => {
+		bulkDeleteDriver
+		if (selectedWaybills.value.length === 0) {
+			uni.showToast({
+				title: '请选择要删除的运单',
+				icon: 'none'
+			});
+			return;
+		}
+		uni.showModal({
+			title: '提示',
+			content: `确定要删除选中的${selectedWaybills.value.length}个运单吗？`,
+			success: async (res) => {
+				if (res.confirm) {
+					const idsToDelete = new Set(selectedWaybills.value);
+					const initialLength = drivers.value.length;
+					// drivers.value = drivers.value.filter(driver => !idsToDelete.has(driver.id || driver
+					// 	.phone));
+					console.log(idsToDelete)
+					const r = Array.from(idsToDelete)
+
+					uni.showLoading({
+						title: '删除中...'
+					})
+					try {
+						const data = {
+							ids: r
+						}
+						const res = await bulkDeleteDriver(data)
+						uni.showToast({
+							title: "操作成功"
+						})
+						await fetchWaybillList()
+					} catch (e) {
+						//TODO handle the exception
+						uni.showToast({
+							title: '操作失败'
+						})
+					} finally {
+						uni.hideLoading()
+					}
+					selectedWaybills.value = []; // 清空选中
+					isEditMode.value = false; // 退出编辑模式
+				}
+			}
+		});
+	}
+
+
+
+
 	// 页面加载
 	onShow(() => {
-		fetchWaybillList(true)
+		fetchWaybillList()
 	})
+	getRegionsList()
 </script>
 
 <style lang="scss">
@@ -288,7 +496,7 @@
 	.waybill-list {
 		min-height: 100vh;
 		background-color: $bg-color;
-
+		overflow: hidden;
 	}
 
 	.list-container {
@@ -302,6 +510,9 @@
 		padding: 24rpx 32rpx;
 		margin-bottom: 20rpx;
 
+		&.active {
+			background-color: $select-item-bg-color;
+		}
 	}
 
 	.waybill-header {
@@ -334,7 +545,7 @@
 				// background: #E6F7FF;
 				color: #a61dff;
 			}
-			
+
 			&.poundageok {
 				// background: #E6F7FF;
 				color: #240fe5;
@@ -370,14 +581,65 @@
 				background: #ffe3f7;
 				color: #a61dff;
 			}
+
 			&.poundageok {
 				background: #c2d0f9;
 				color: #240fe5;
 			}
+
 			&.completed {
 				background: #cafff5;
 				color: #31c6a9;
 			}
+		}
+	}
+
+	.search-section {
+		padding: $spacing-md;
+		background-color: $bg-white;
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: 0;
+		z-index: 1;
+		display: flex; // 使用flex布局
+		align-items: center; // 垂直居中
+
+		.search-box {
+			flex: 1; // 搜索框占据剩余空间
+			display: flex;
+			align-items: center;
+			height: 72rpx;
+			background: $bg-color;
+			border-radius: $radius-lg;
+			padding: 0 $spacing-md;
+			margin-right: $spacing-sm; // 与管理按钮的间距
+			.uni-stat-box{
+				background-color: #ecf4ff;
+				.uni-select{
+					border: none;
+				}
+			}
+			.icon-search {
+				font-size: 36rpx;
+				color: $text-light;
+				margin-right: $spacing-sm;
+			}
+
+			input {
+				flex: 1;
+				height: 100%;
+				font-size: $font-size-md;
+			}
+		}
+
+		.manage-btn {
+			padding: 0 $spacing-sm;
+			font-size: $font-size-md;
+			color: $default-color;
+			// 确保点击区域足够
+			height: 72rpx;
+			line-height: 72rpx;
 		}
 	}
 
@@ -494,8 +756,9 @@
 
 	.driver-list {
 		flex: 1;
+		min-height: 550rpx;
 		// padding: 0 $spacing-lg;
-		max-height: 60vh;
+		max-height: 70vh;
 		box-sizing: border-box;
 	}
 
@@ -504,9 +767,14 @@
 		align-items: center;
 		padding: $spacing-md $spacing-lg;
 		border-bottom: 2rpx solid $border-color1;
-		
+
 		&.empty {
 			height: 140rpx;
+			border-bottom: 0rpx solid $border-color1;
+
+			.tips {
+				color: $danger-color;
+			}
 		}
 
 		&.active {
@@ -573,6 +841,7 @@
 			font-size: $font-size-md;
 			border: none;
 			line-height: 80rpx;
+
 			&.cancel-btn {
 				background: $bg-color;
 				color: $text-main;
@@ -606,7 +875,7 @@
 	.add-btn {
 		position: fixed;
 		right: 32rpx;
-		bottom: 112rpx;
+		bottom: 222rpx;
 		width: 100rpx;
 		height: 100rpx;
 		background: $primary-color;
@@ -625,6 +894,65 @@
 
 		&:active {
 			opacity: 0.8;
+		}
+	}
+
+	.bottom-actions {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: $spacing-md $spacing-lg;
+		background-color: $bg-white;
+		border-top: 1rpx solid $border-color;
+		box-shadow: $shadow-1-up; // 如果有向上阴影的变量
+		padding-bottom: calc($spacing-md + constant(safe-area-inset-bottom)); // 适配底部安全区域
+		padding-bottom: calc($spacing-md + env(safe-area-inset-bottom)); // 适配底部安全区域
+		z-index: 10;
+
+		.select-all-wrapper {
+			display: flex;
+			align-items: center;
+			font-size: $font-size-md;
+			color: $text-main;
+
+			.iconfont {
+				font-size: 44rpx;
+				margin-right: $spacing-sm;
+
+				&.icon-checkbox-normal {
+					color: $text-light;
+				}
+
+				&.icon-checkbox-selected {
+					color: $default-color;
+				}
+			}
+		}
+
+		.action-btn {
+			height: 80rpx; // 统一按钮高度
+			line-height: 80rpx;
+			font-size: $font-size-lg;
+			padding: 0 60rpx;
+			border-radius: $radius-lg;
+			color: $text-white;
+			background-color: $default-color; // 删除按钮的背景色
+			border: none;
+
+			&.primary-btn {
+				background-color: $primary-color; // 确保使用主题色，或者直接用$default-color
+				color: $text-white;
+			}
+
+			&[disabled] {
+				opacity: 0.6;
+				background-color: #ccc; // 禁用按钮的背景色
+				color: #ccc; // 禁用按钮的文字颜色
+			}
 		}
 	}
 </style>

@@ -22,7 +22,6 @@ export function useShippers() {
 					text: v.company_name
 				}
 			})
-			console.log(selectList)
 		} catch (e) {
 			//TODO handle the exception
 			uni.showToast({

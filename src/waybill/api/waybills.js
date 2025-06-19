@@ -1,12 +1,16 @@
 import request from '@/utils/request'
-
+import {safeQueryString} from '@/waybill/utils/utils.js'
 // 获取运单
 export function getWaybills(data) {
-	console.log(data)
+	let url = '/api/waybills/'
+	if(data){
+		const r = safeQueryString(data)
+		 url = url + "?" + r
+		console.log(url)
+	}
 	return request({
-		url: '/api/waybills/',
+		url: url,
 		method: 'get',
-		data
 	})
 }
 
@@ -61,9 +65,18 @@ export function generateWeighNote() {
 // 审核通过
 
 export function approveWaybill(id, data) {
-	console.log('approveWaybill')
 	return request({
 		url:`/api/waybill-details/${id}/review/`,
+		method: 'post',
+		data
+	})
+}
+
+
+
+export function bulkDeleteDriver(data) {
+	return request({
+		url:`/api/waybills/bulk-delete/`,
 		method: 'post',
 		data
 	})

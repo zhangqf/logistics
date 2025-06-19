@@ -9,7 +9,7 @@
 					<!-- <input v-model="formData.senderCompany" class="input" placeholder="请输入发货公司名称"
 						placeholder-class="placeholder-style" /> -->
 					<uni-data-select class="input" style="background-color: #fff;" v-model="formData.senderCompany" :localdata="selectList"
-						@change="change"></uni-data-select>
+						></uni-data-select>
 				</view>
 				<view class="form-item">
 					<text class="label required">公司地址</text>

@@ -16,6 +16,19 @@ const getDuration = (start, end) => {
 
 }
 
+export const safeQueryString=(data)=> {
+  return Object.keys(data)
+    .filter(key => 
+      data[key] !== undefined && 
+      data[key] !== null && 
+      data[key] !== ''
+    )
+    .map(key => 
+      `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`
+    )
+    .join('&');
+}
+
 
 export const statusMap = {
 	created: '待分配',
@@ -24,4 +37,11 @@ export const statusMap = {
 	approved: '待生成磅单',
 	poundageok: '待生成轨迹',
 	completed: '已完成'
+}
+
+export const driverSearchMap = {
+	driver_license_plate: '车牌号',
+	region: '区域',
+	driver_name: '司机姓名',
+	phone: '手机号',
 }

@@ -32,6 +32,7 @@ export default defineConfig({
 		include: ['pinia']
 	},
 	build: {
+		sourcemap:'inline',
 		minify: 'terser', // 确保使用 terser
 		terserOptions: {
 			compress: {

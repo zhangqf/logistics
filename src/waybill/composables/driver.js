@@ -4,12 +4,14 @@ export function useDirvers(){
 	
 	const drivers = ref([]) 
 	
-	const getDriverList =async () => {
+	const getDriverList =async (data) => {
+		console.log(data)
+		console.log('getDriverList')
 		try{
 			uni.showLoading({
 				title:'获取司机列表...'
 			})
-			const res = await getDriverInfo()
+			const res = await getDriverInfo(data)
 			drivers.value = res.data
 		}catch(e){
 			//TODO handle the exception

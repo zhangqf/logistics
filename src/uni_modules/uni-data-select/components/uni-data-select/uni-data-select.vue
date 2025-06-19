@@ -386,8 +386,8 @@
 		border-bottom: solid 1px $uni-border-3;
 		width: 100%;
 		flex: 1;
-		height: 80rpx;
-		background: #f8f8f8;
+		height: 35px;
+
 		&--disabled {
 			background-color: #f5f7fa;
 			cursor: not-allowed;
@@ -403,7 +403,7 @@
 	}
 
 	.uni-select__input-box {
-		height: 90rpx;
+		height: 35px;
 		width: 0px;
 		position: relative;
 		/* #ifndef APP-NVUE */
@@ -548,9 +548,7 @@
 
 	.uni-select__input-placeholder {
 		color: $uni-base-color;
-		font-size: 28rpx;
-		height: 80rpx;
-		line-height: 80rpx;
+		font-size: 12px;
 	}
 
 	.uni-select--mask {

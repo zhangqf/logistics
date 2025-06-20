@@ -220,8 +220,8 @@
 					<button class="primary-btn" @tap="handleAudit">提交审核</button>
 				</template>
 				<template v-if="waybillDetail.status === 'completed'">
-					<!-- <button class="primary-btn" @tap="handleDownloadWeighNote">下载电子磅单</button> -->
-					<button class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
+					<button class="primary-btn" @tap="handleDownloadWeighNote">下载电子磅单</button>
+					<!-- <button class="primary-btn" @tap="handleViewTrack">查看轨迹</button> -->
 					<button class="primary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
 			</template>
@@ -363,6 +363,7 @@
 
 	// 下载电子磅单
 	const handleDownloadWeighNote = () => {
+		return
 		uni.downloadFile({
 			url: waybillDetail.value.weigh_note_url,
 			success: (res) => {

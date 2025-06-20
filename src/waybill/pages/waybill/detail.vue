@@ -2,7 +2,7 @@
 	<view class="waybill-detail">
 		<!-- 运单号和状态 -->
 		<view class="header">
-			<text class="waybill-number" :class="waybillDetail.status">{{waybillDetail.waybill_number}}</text>
+			<text class="waybill-number" @tap="handleViewTrack" :class="waybillDetail.status">{{waybillDetail.waybill_number}}</text>
 			<text class="status" :class="waybillDetail.status">{{statusMap[waybillDetail.status]}}</text>
 		</view>
 
@@ -220,8 +220,8 @@
 					<button class="primary-btn" @tap="handleAudit">提交审核</button>
 				</template>
 				<template v-if="waybillDetail.status === 'completed'">
-					<!-- <button class="primary-btn" @tap="handleDownloadWeighNote">下载电子磅单</button> -->
-					<button class="primary-btn" @tap="handleViewTrack">查看轨迹</button>
+					<button class="primary-btn" @tap="handleDownloadWeighNote">下载电子磅单</button>
+					<!-- <button class="primary-btn" @tap="handleViewTrack">查看轨迹</button> -->
 					<button class="primary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
 			</template>
@@ -240,8 +240,10 @@
 				<template v-else>
 					<button v-if='userRole === "admin" && waybillDetail.status !== "completed"' class="secondary-btn"
 						@tap="handleGeneratorTrack">生成轨迹</button>
-					<button v-if='waybillDetail.status === "completed"' class="primary-btn"
-						@tap="handleViewTrack">查看轨迹</button>
+					<!-- <button v-if='waybillDetail.status === "completed"' class="primary-btn"
+						@tap="handleViewTrack">查看轨迹</button> -->
+					<button class="primary-btn" v-if='waybillDetail.status === "completed"'
+						@tap="handleDownloadWeighNote">下载电子磅单</button>
 					<button class="primary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
 			</template>
@@ -362,6 +364,7 @@
 
 	// 下载电子磅单
 	const handleDownloadWeighNote = () => {
+		return
 		uni.downloadFile({
 			url: waybillDetail.value.weigh_note_url,
 			success: (res) => {

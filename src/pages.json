@@ -97,7 +97,7 @@
 					"path" : "pages/weighnote/index",
 					"style" : 
 					{
-						"navigationBarTitleText" : "磅单"
+						"navigationBarTitleText" : "电子磅单"
 					}
 				}
 			]

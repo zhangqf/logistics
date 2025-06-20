@@ -4,9 +4,9 @@
 		<view class="search-section" v-if="userRole==='admin'">
 			<!-- <view class="search-box" @tap="handleSearch"> -->
 			<view class="search-box" @tap="handleSearch">
-				<text class="iconfont icon-search"></text>
+				<text class="iconfont icon-sousuo"></text>
 				<!-- <text>{{searchText}}</text> -->
-				<uni-data-select style="width:100%; height:72rpx;line-height: 72rpx; font-size: 32rpx;"
+				<uni-data-select style="width:100%; height:60rpx;line-height: 60rpx; font-size: 32rpx;"
 					v-model="searchRegion" :localdata="selectRegionsList" placeholder='请选择地区'></uni-data-select>
 			</view>
 			<view  class="manage-btn" @tap="toggleEditMode">
@@ -20,7 +20,7 @@
 			</view>
 			<view class="waybill-item" style="position: relative;" :class="item.isSelected ? 'active' : ''" v-for="item in waybillList"
 				:key="item.id" @tap="showDetail(item)">
-				<view v-if="userRole==='admin'" style="position: absolute; bottom: -20rpx;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
+				<view v-if="userRole==='admin'" style="position: absolute; bottom: 0;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
 				<view class="waybill-header">
 					<view style="display: flex; align-items: center;"><text class="iconfont"
 							style="font-size: 48rpx;margin-right: 18rpx; color: #1623ad;">&#xe672;</text><text
@@ -265,7 +265,7 @@
 			})
 			return
 		}
-		waybill.value = []
+		drivers.value = []
 	})
 	watch(searchRegion, (newVal) => {
 		const r = selectRegionsList.value.filter(v => v.value === newVal)
@@ -620,7 +620,7 @@
 					border: none;
 				}
 			}
-			.icon-search {
+			.icon-sousuo {
 				font-size: 36rpx;
 				color: $text-light;
 				margin-right: $spacing-sm;
@@ -636,7 +636,7 @@
 		.manage-btn {
 			padding: 0 $spacing-sm;
 			font-size: $font-size-md;
-			color: $default-color;
+			color: #ffae20;
 			// 确保点击区域足够
 			height: 72rpx;
 			line-height: 72rpx;

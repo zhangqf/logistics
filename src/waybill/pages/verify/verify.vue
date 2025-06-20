@@ -20,7 +20,7 @@
 
 			<view v-if="userRole === 'driver'" class="form-item">
 				<text class="label required">区域</text>
-				<input @tap="handlePopup" class="input" type="text" v-model="formData.region_name" placeholder="请选择区域"
+				<input readonly @tap="handlePopup" class="input" type="text" v-model="formData.region_name" placeholder="请选择区域"
 					:disabled="isApproved" />
 			</view>
 
@@ -66,7 +66,7 @@
 				idCard: userStore.userInfo?.auth_info?.id_card || '',
 				licensePlate: userStore.userInfo?.auth_info?.license_plate || '',
 				region: '',
-				region_name:userStore.userInfo?.region_name||''
+				region_name:userStore?.region_name||''
 			})
 			const showPopup = ref(false)
 			const selectedRegion = ref()
@@ -86,7 +86,7 @@
 			}
 			const popup = ref()
 			const handlePopup = () => {
-				if(isApproved) return
+				if(!isApproved) return
 				showPopup.value = true
 			}
 			const confirm = (data) => {

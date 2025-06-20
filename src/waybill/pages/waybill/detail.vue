@@ -2,14 +2,14 @@
 	<view class="waybill-detail">
 		<!-- 运单号和状态 -->
 		<view class="header">
-			<text class="waybill-number" :class="waybillDetail.status">{{waybillDetail.waybill_number}}</text>
+			<text @tap="handleViewTrack"  class="waybill-number" :class="waybillDetail.status">{{waybillDetail.waybill_number}}</text>
 			<text class="status" :class="waybillDetail.status">{{statusMap[waybillDetail.status]}}</text>
 		</view>
 
 		<!-- 运单信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<text class="iconfont">&#xe676;</text>
+				<!-- <text class="iconfont icon-yunfeib"></text> -->
 				<text>运单信息</text>
 			</view>
 			<view class="info-item">
@@ -48,7 +48,7 @@
 		<!-- 发货方信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<text class="iconfont">&#xe676;</text>
+				<!-- <text class="iconfont icon-fa"></text> -->
 				<text>发货方信息</text>
 			</view>
 			<view class="info-item">
@@ -92,7 +92,7 @@
 		<!-- 收货方信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<text class="iconfont">&#xe676;</text>
+				<!-- <text class="iconfont icon-shou"></text> -->
 				<text>收货方信息</text>
 			</view>
 			<view class="info-item">
@@ -136,7 +136,7 @@
 		<!-- 承运信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<text class="iconfont">&#xe676;</text>
+				<!-- <text class="iconfont icon-rengonggaichengyunshang_o"></text> -->
 				<text>承运信息</text>
 			</view>
 			<!-- <view class="info-item">

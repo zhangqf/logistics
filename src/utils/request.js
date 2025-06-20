@@ -181,7 +181,8 @@ const request = (options) => {
 				// 网络错误等
 				uni.showToast({
 					title: '网络异常，请检查网络设置',
-					icon: 'none'
+					icon: 'none',
+					duration:3000
 				})
 				reject(error)
 			},

@@ -1,7 +1,7 @@
 <template>
 	<view class="waybill-list">
 		<!-- 顶部搜索区域和管理按钮 -->
-		<view class="search-section">
+		<view class="search-section" v-if="userRole==='admin'">
 			<!-- <view class="search-box" @tap="handleSearch"> -->
 			<view class="search-box" @tap="handleSearch">
 				<text class="iconfont icon-search"></text>
@@ -9,18 +9,18 @@
 				<uni-data-select style="width:100%; height:72rpx;line-height: 72rpx; font-size: 32rpx;"
 					v-model="searchRegion" :localdata="selectRegionsList" placeholder='请选择地区'></uni-data-select>
 			</view>
-			<view v-if="userRole==='admin'" class="manage-btn" @tap="toggleEditMode">
+			<view  class="manage-btn" @tap="toggleEditMode">
 				<text>{{ isEditMode ? '完成' : '管理' }}</text>
 			</view>
 		</view>
 		<!-- 列表 -->
 		<scroll-view scroll-y class="list-container" @scrolltoupper="loadMore">
-			<view class="" style="width: 100%; height: 130rpx;">
+			<view v-if="userRole==='admin'" class="" style="width: 100%; height: 130rpx;">
 
 			</view>
 			<view class="waybill-item" style="position: relative;" :class="item.isSelected ? 'active' : ''" v-for="item in waybillList"
 				:key="item.id" @tap="showDetail(item)">
-				<view style="position: absolute; bottom: 0;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
+				<view v-if="userRole==='admin'" style="position: absolute; bottom: -20rpx;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
 				<view class="waybill-header">
 					<view style="display: flex; align-items: center;"><text class="iconfont"
 							style="font-size: 48rpx;margin-right: 18rpx; color: #1623ad;">&#xe672;</text><text
@@ -40,7 +40,7 @@
 					<text>{{item.material_info}}</text>
 					<!-- <text class="company">{{item.receiver_company}}</text> -->
 				</view>
-				<view style="text-align: center; color: #7f7f7f;">{{formatDate(item.detail_info?.dispatch_time)}}</view>
+				<view style="text-align: center; color: #7f7f7f;">{{formatDate(item.detail_info?.dispatch_time)}}-9999-12-31 23:59:59</view>
 				<view class="bottom-info">
 					<button v-if="userRole!=='driver'" class="assign-btn" @tap.stop="showDriverSelect(item)"
 						:disabled="item.status !== 'created'">

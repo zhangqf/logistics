@@ -66,7 +66,7 @@
 				idCard: userStore.userInfo?.auth_info?.id_card || '',
 				licensePlate: userStore.userInfo?.auth_info?.license_plate || '',
 				region: '',
-				region_name:userStore.userInfo?.auth_info?.license_plate||''
+				region_name:userStore.userInfo?.region_name||''
 			})
 			const showPopup = ref(false)
 			const selectedRegion = ref()

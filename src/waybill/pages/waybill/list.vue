@@ -20,6 +20,7 @@
 			</view>
 			<view class="waybill-item" style="position: relative;" :class="item.isSelected ? 'active' : ''" v-for="item in waybillList"
 				:key="item.id" @tap="showDetail(item)">
+				<view style="position: absolute; bottom: 0;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
 				<view class="waybill-header">
 					<view style="display: flex; align-items: center;"><text class="iconfont"
 							style="font-size: 48rpx;margin-right: 18rpx; color: #1623ad;">&#xe672;</text><text
@@ -50,7 +51,6 @@
 						<text>{{item.license_plate}}</text>
 					</text>
 				</view>
-				<view style="position: absolute; bottom: 0;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
 			</view>
 			<view class="" style="width: 100%; height: 300rpx;">
 

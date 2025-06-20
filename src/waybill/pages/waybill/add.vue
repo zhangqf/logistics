@@ -8,8 +8,8 @@
 					<text class="label required">公司名称</text>
 					<!-- <input v-model="formData.senderCompany" class="input" placeholder="请输入发货公司名称"
 						placeholder-class="placeholder-style" /> -->
-					<uni-data-select class="input" style="background-color: #fff;" v-model="formData.senderCompany" :localdata="selectList"
-						></uni-data-select>
+					<uni-data-select class="input" style="background-color: #fff;" v-model="formData.senderCompany"
+						:localdata="selectList"></uni-data-select>
 				</view>
 				<view class="form-item">
 					<text class="label required">公司地址</text>
@@ -38,20 +38,27 @@
 					<text class="label required">派车时间</text>
 					<!-- <textarea v-model="formData.dispatch_time" class="textarea" placeholder="请输入派车时间"
 						placeholder-class="placeholder-style" /> -->
-						<uni-datetime-picker style="width: 100%; " type="datetime" return-type='date'
-							v-model="formData.dispatch_time" />
+					<uni-datetime-picker style="width: 100%; " type="datetime" return-type='date'
+						v-model="formData.dispatch_time" />
 				</view>
-				
+
 			</view>
 			<!-- 物料信息 -->
 			<view class="form-section">
 				<view class="section-title">物料信息</view>
 				<view class="form-item">
+					<text class="label required">所属区域</text>
+					<!-- <textarea v-model="formData.materialInfo" class="textarea" placeholder="请输入物料详细信息"
+						placeholder-class="placeholder-style" /> -->
+					<uni-data-select style="width:100%; height:72rpx;line-height: 72rpx; font-size: 32rpx;"
+						v-model="formData.region" :localdata="selectRegionsList" placeholder='请选择地区'></uni-data-select>
+				</view>
+				<view class="form-item">
 					<text class="label required">物料详情</text>
 					<textarea v-model="formData.materialInfo" class="textarea" placeholder="请输入物料详细信息"
 						placeholder-class="placeholder-style" />
 				</view>
-				
+
 			</view>
 
 
@@ -106,6 +113,9 @@
 	import {
 		onReady
 	} from '@dcloudio/uni-app';
+	import {
+		useRegions
+	} from '@/waybill/composables/regions.js'
 
 	const {
 		getShippers,
@@ -120,9 +130,17 @@
 		receiverAddress: '',
 		materialInfo: '',
 		securityImage: '',
-		dispatch_time:''
+		dispatch_time: '',
+		region:''
 	})
-
+	
+	// 区域
+	const {
+		getRegionsList,
+		selectRegionsList,
+		regions
+	} = useRegions()
+	getRegionsList()
 	// 生成22位运单号（年份+18位随机码）
 	const generateWaybillNumber = () => {
 		const year = new Date().getFullYear()
@@ -188,7 +206,7 @@
 		// 验证表单
 		if (!formData.value.senderCompany || !formData.value.senderAddress ||
 			!formData.value.receiverCompany || !formData.value.receiverAddress ||
-			!formData.value.materialInfo || !formData.value.dispatch_time) {
+			!formData.value.materialInfo || !formData.value.dispatch_time ||!formData.value.region) {
 			uni.showToast({
 				title: '请填写完整信息',
 				icon: 'none'
@@ -208,7 +226,8 @@
 				receiver_company: data.receiverCompany,
 				receiver_address: data.receiverAddress,
 				material_info: data.materialInfo,
-				dispatch_time:data.dispatch_time
+				dispatch_time: data.dispatch_time,
+				region:data.region
 			}
 			console.log(submitData)
 			const res = await postWaybills(submitData)
@@ -243,6 +262,7 @@
 </style>
 <style lang="scss">
 	@use '@/styles/index.scss';
+
 	.text {
 		font-size: 28rpx;
 		color: #666;
@@ -375,22 +395,24 @@
 	.placeholder-style {
 		color: $text-light;
 	}
+
 	.uni-date-x {
 		background-color: $bg-color;
 		height: 60rpx;
+
 		.uni-date-editor--x {
-			border:none !important;
+			border: none !important;
 		}
-		
+
 		.icon-calendar {
 			display: none;
 		}
-	
+
 		.uni-date__x-input {
 			font-size: 28rpx;
 			height: 60rpx;
 			padding-left: 10rpx;
 		}
-	
+
 	}
 </style>

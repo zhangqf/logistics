@@ -18,7 +18,7 @@
 			<view class="" style="width: 100%; height: 130rpx;">
 
 			</view>
-			<view class="waybill-item" :class="item.isSelected ? 'active' : ''" v-for="item in waybillList"
+			<view class="waybill-item" style="position: relative;" :class="item.isSelected ? 'active' : ''" v-for="item in waybillList"
 				:key="item.id" @tap="showDetail(item)">
 				<view class="waybill-header">
 					<view style="display: flex; align-items: center;"><text class="iconfont"
@@ -41,16 +41,16 @@
 				</view>
 				<view style="text-align: center; color: #7f7f7f;">{{formatDate(item.detail_info?.dispatch_time)}}</view>
 				<view class="bottom-info">
-
-
 					<button v-if="userRole!=='driver'" class="assign-btn" @tap.stop="showDriverSelect(item)"
 						:disabled="item.status !== 'created'">
 						分配
 					</button>
+					
 					<text class="license-plate">
 						<text>{{item.license_plate}}</text>
 					</text>
 				</view>
+				<view style="position: absolute; bottom: 0;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
 			</view>
 			<view class="" style="width: 100%; height: 300rpx;">
 

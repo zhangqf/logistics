@@ -18,10 +18,10 @@
 					:disabled="isApproved" />
 			</view>
 
-			<view v-if="userRole === 'driver'" class="form-item">
+			<view v-if="userRole !== 'company'" class="form-item">
 				<text class="label required">区域</text>
 				<input readonly @tap="handlePopup" class="input" type="text" v-model="formData.region_name" placeholder="请选择区域"
-					:disabled="isApproved" />
+					disabled="true" />
 			</view>
 
 			<!-- 认证状态提示 -->
@@ -42,7 +42,8 @@
 		ref
 	} from 'vue'
 	import {
-		verifyIdentity
+		verifyIdentity,
+		putVerifyIdentity
 	} from '@/waybill/api/verify'
 	import {
 		useUserStore
@@ -58,7 +59,9 @@
 		    Popup
 		  },
 		setup() {
+			
 			const userStore = useUserStore()
+			console.log(userStore)
 			const userRole = ref(userStore.userInfo?.role || '')
 			const isApproved = ref(userStore.userInfo?.is_approved || false)
 			const formData = ref({
@@ -66,7 +69,7 @@
 				idCard: userStore.userInfo?.auth_info?.id_card || '',
 				licensePlate: userStore.userInfo?.auth_info?.license_plate || '',
 				region: '',
-				region_name:userStore?.region_name||''
+				region_name:userStore.userInfo?.region_name||''
 			})
 			const showPopup = ref(false)
 			const selectedRegion = ref()
@@ -86,7 +89,8 @@
 			}
 			const popup = ref()
 			const handlePopup = () => {
-				if(!isApproved) return
+				// console.log(is)
+				if(isApproved.value) return
 				showPopup.value = true
 			}
 			const confirm = (data) => {
@@ -158,13 +162,19 @@
 					const submitData = {
 						real_name: formData.value.name,
 						id_card: formData.value.idCard,
+						region:  formData.value.region,
 						...(userRole.value === 'driver' ? {
 							license_plate: formData.value.licensePlate,
-							region:  formData.value.region,
 						} : {})
 					}
 					console.log(submitData)
-					const res = await verifyIdentity(submitData)
+					let res
+					if(userStore.userInfo?.auth_info?.id) {
+						res = await putVerifyIdentity(userStore.userInfo?.auth_info?.id,submitData)
+					} else {
+						res = await verifyIdentity(submitData)
+					}
+					
 					console.log(res)
 					if (res.selfErrorCode === 0) {
 						// 更新用户信息中的认证状态

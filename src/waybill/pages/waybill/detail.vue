@@ -179,7 +179,7 @@
 					v-model="waybillDetail.axle_count" />
 				<text v-else class="value">{{waybillDetail.axle_count}}</text> 轴
 			</view>
-			<view class="info-item" v-if="waybillDetail.status==='auditing' && userRole === 'admin'">
+			<view class="info-item" v-if="waybillDetail.status==='auditing' && (userRole === 'admin'||userRole === 'company')">
 				<text class="label required">出发时间</text>
 
 				<uni-datetime-picker type="datetime" v-model="waybillDetail.delivery_time" return-type='date' />
@@ -188,7 +188,7 @@
 				<text class="label">出发时间</text>
 				<text class="value">{{formatDate(waybillDetail.delivery_time)}}</text>
 			</view>
-			<view class="info-item" v-if="waybillDetail.status==='auditing' && userRole === 'admin'">
+			<view class="info-item" v-if="waybillDetail.status==='auditing' && (userRole === 'admin'||userRole === 'company')">
 				<text class="label required">到达时间</text>
 				<uni-datetime-picker style="width: 100%; height: 80rpx;" type="datetime" return-type='date'
 					v-model="waybillDetail.receiver_time" />
@@ -227,7 +227,7 @@
 			</template>
 
 			<!-- 管理员角色 -->
-			<template v-if="userRole === 'admin'">
+			<template v-if='(userRole === "admin"||userRole === "company")'>
 				<template v-if="waybillDetail.status === 'auditing'||waybillDetail.status === 'approved'">
 					<template v-if="waybillDetail.status === 'auditing'">
 						<button class="success-btn" @tap="handleApproveAudit">通过审核</button>
@@ -239,7 +239,7 @@
 					</template>
 				</template>
 				<template v-else>
-					<button v-if='userRole === "admin" && waybillDetail.status !== "completed"' class="secondary-btn"
+					<button v-if='(userRole === "admin"||userRole === "company") && waybillDetail.status !== "completed"' class="secondary-btn"
 						@tap="handleGeneratorTrack">生成轨迹</button>
 					<button v-if='waybillDetail.status === "completed"' class="primary-btn"
 						@tap="handleViewTrack">查看轨迹</button>
@@ -405,6 +405,7 @@
 	}
 	// 查看轨迹
 	const handleViewTrack = () => {
+		if(waybillDetail.value.status !== 'completed') return
 		uni.navigateTo({
 			url: `/waybill/pages/map/map?startCity=${waybillDetail.value.loading_place}&endCity=${waybillDetail.value.delivery_address}&departureTime=${formatDate(waybillDetail.value.delivery_time)}&arrivalTime=${formatDate(waybillDetail.value.receiver_time)}&id=${waybillDetail.value.waybill}&generator=${false}&guiji_distance=${waybillDetail.value.guiji_distance}&guiji_speed=${waybillDetail.value.guiji_speed}&guiji_time=${waybillDetail.value.guiji_time}&status=${waybillDetail.value.status}&driver_license_plate=${waybillDetail.value.assignee_info.driver_license_plate}`
 		})

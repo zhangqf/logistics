@@ -162,12 +162,11 @@ export const useUserStore = defineStore('user', {
 
 		// 更新用户信息
 		updateUserInfo(info) {
-			this.userInfo = {
-				...this.userInfo,
-				...info
-			}
 			console.log(this.userInfo)
-			uni.setStorageSync('userInfo', this.userInfo)
+			console.log(info)
+			this.userInfo = info
+			console.log(this.userInfo)
+			uni.setStorageSync('userInfo', info)
 		},
 
 		// 获取用户信息

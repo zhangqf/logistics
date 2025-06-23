@@ -1,7 +1,7 @@
 <template>
 	<view class="waybill-list">
 		<!-- 顶部搜索区域和管理按钮 -->
-		<view class="search-section" v-if="userRole==='admin'">
+		<view class="search-section" v-if='(userRole === "admin"||userRole === "company")'>
 			<!-- <view class="search-box" @tap="handleSearch"> -->
 			<view class="search-box" @tap="handleSearch">
 				<text class="iconfont icon-sousuo"></text>
@@ -15,12 +15,12 @@
 		</view>
 		<!-- 列表 -->
 		<scroll-view scroll-y class="list-container" @scrolltoupper="loadMore">
-			<view v-if="userRole==='admin'" class="" style="width: 100%; height: 130rpx;">
+			<view v-if='(userRole === "admin"||userRole === "company")' class="" style="width: 100%; height: 130rpx;">
 
 			</view>
 			<view class="waybill-item" style="position: relative;" :class="item.isSelected ? 'active' : ''" v-for="item in waybillList"
 				:key="item.id" @tap="showDetail(item)">
-				<view v-if="userRole==='admin'" style="position: absolute; bottom: 0;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
+				<view v-if='(userRole === "admin"||userRole === "company")' style="position: absolute; bottom: 0;left: 0;right: 0;width: 100%;padding: 10rpx; text-align: center; font-size: 60rpx; color: rgba(22, 56, 237, 0.2);border-radius: 8rpx;">{{item.region_name}}</view>
 				<view class="waybill-header">
 					<view style="display: flex; align-items: center;"><text class="iconfont"
 							style="font-size: 48rpx;margin-right: 18rpx; color: #1623ad;">&#xe672;</text><text
@@ -212,14 +212,14 @@
 		if (!waybill.detail_info) {
 			return
 		}
-		if (userStore.userInfo?.role === 'admin' && waybill.status === 'assigned') {
+		if ((userStore.userInfo?.role === 'admin'||userStore.userInfo?.role === 'company') && waybill.status === 'assigned') {
 			uni.showToast({
 				title: '等待司机提交审核',
 				icon: 'none'
 			})
 			return
 		}
-		if (userStore.userInfo?.role === 'admin' && waybill.status === 'created') {
+		if ((userStore.userInfo?.role === 'admin'||userStore.userInfo?.role === 'company') && waybill.status === 'created') {
 			uni.showToast({
 				title: '待分配给司机',
 				icon: 'none'

@@ -106,7 +106,7 @@
 					</view>
 					<!-- <text class="select-icon" v-if="selectedDriver?.id === driver.id">✓</text> -->
 				</view>
-				<view class="driver-item empty">
+				<view class="driver-item empty" style="padding-bottom: 400rpx;">
 				</view>
 			</view>
 			<view v-else class="driver-item empty" style="display:block;text-align: center;">
@@ -824,7 +824,7 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		padding-bottom: calc(env(safe-area-inset-bottom));
+		// padding-bottom: calc(env(safe-area-inset-bottom));
 		background-color: #fff;
 	}
 

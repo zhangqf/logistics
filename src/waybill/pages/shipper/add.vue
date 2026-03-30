@@ -63,20 +63,6 @@
 					})
 					return false
 				}
-				// if (!formData.value.creditCode) {
-				// 	uni.showToast({
-				// 		title: '请输入统一社会信用代码',
-				// 		icon: 'none'
-				// 	})
-				// 	return false
-				// }
-				// if (formData.value.creditCode.length !== 18) {
-				// 	uni.showToast({
-				// 		title: '请输入正确的统一社会信用代码',
-				// 		icon: 'none'
-				// 	})
-				// 	return false
-				// }
 				return true
 			}
 

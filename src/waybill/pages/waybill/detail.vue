@@ -9,7 +9,6 @@
 		<!-- 运单信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<!-- <text class="iconfont icon-yunfeib"></text> -->
 				<text>运单信息</text>
 			</view>
 			<view class="info-item">
@@ -48,7 +47,6 @@
 		<!-- 发货方信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<!-- <text class="iconfont icon-fa"></text> -->
 				<text>发货方信息</text>
 			</view>
 			<view class="info-item">
@@ -92,7 +90,6 @@
 		<!-- 收货方信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<!-- <text class="iconfont icon-shou"></text> -->
 				<text>收货方信息</text>
 			</view>
 			<view class="info-item">
@@ -136,19 +133,11 @@
 		<!-- 承运信息 -->
 		<view class="info-card">
 			<view class="card-title">
-				<!-- <text class="iconfont icon-rengonggaichengyunshang_o"></text> -->
 				<text>承运信息</text>
 			</view>
-			<!-- <view class="info-item">
-				<text class="label">承运商</text>
-				<text class="value">{{waybillDetail.carrier_name}}</text>
-				<input class="uni-input input" placeholder="请输入承运商" v-model="waybillDetail.carrier_name" />
-				
-			</view> -->
 			<view class="info-item">
 				<text class="label">车牌号</text>
 				<text class="value">{{waybillDetail?.assignee_info?.driver_license_plate}}</text>
-				<!-- <input class="uni-input input" placeholder="请输入卸载要求" v-model="waybillDetail.unloading_requirements" /> -->
 
 			</view>
 			<view class="info-item">
@@ -221,7 +210,6 @@
 				</template>
 				<template v-if="waybillDetail.status === 'completed'">
 					<button class="primary-btn" @tap="handleDownloadWeighNote">下载电子磅单</button>
-					<!-- <button class="primary-btn" @tap="handleViewTrack">查看轨迹</button> -->
 					<button class="primary-btn" @tap="handleViewWeighNote">查看磅单</button>
 				</template>
 			</template>
@@ -234,7 +222,6 @@
 					</template>
 
 					<template v-else>
-						<!-- <button class="primary-btn" @tap="handleViewTrack">查看轨迹</button> -->
 						<button class="secondary-btn" @tap="handleGenerateWeighNote">生成磅单</button>
 					</template>
 				</template>
@@ -390,9 +377,6 @@
 
 	// 查看磅单
 	const handleViewWeighNote = () => {
-		// uni.previewImage({
-		// 	urls: [waybillDetail.value.weigh_note_url]
-		// })
 		uni.navigateTo({
 			url: `/waybill/pages/weighnote/index?data=${JSON.stringify(toRaw(waybillDetail.value))}&bgid=${bgid.value}`
 		})
@@ -416,26 +400,6 @@
 		uni.navigateTo({
 			url: `/waybill/pages/weighnote/index?data=${JSON.stringify(toRaw(waybillDetail.value))}&bgid=${bgid.value}`
 		})
-		// try {
-		// 	uni.showLoading({
-		// 		title: '生成中...'
-		// 	})
-		// 	const res = await generateWeighNote(waybillDetail.value.id)
-		// 	if (res.selfErrorCode === 0) {
-		// 		uni.showToast({
-		// 			title: '生成成功',
-		// 			icon: 'success'
-		// 		})
-		// 		getDetail(waybillDetail.value.id)
-		// 	}
-		// } catch (error) {
-		// 	uni.showToast({
-		// 		title: '生成失败',
-		// 		icon: 'none'
-		// 	})
-		// } finally {
-		// 	uni.hideLoading()
-		// }
 	}
 
 	// 通过审核

@@ -61,12 +61,6 @@
 				删除所选({{ selectedDriverIds.length }})
 			</button>
 		</view>
-
-		<!-- 添加按钮 (保持注释状态，如果你需要取消注释，请注意其fixed定位可能与底部操作栏冲突) -->
-		<!-- <view class="add-btn" @tap="handleAddDriver">
-			<text class="iconfont icon-add"></text>
-			<text>添加司机</text>
-		</view> -->
 	</view>
 	<Filter v-if="isSearch" title='搜索司机' @reset='resetSearch' @cancel='isSearch = false' @confirm='confrim' />
 </template>
@@ -212,22 +206,6 @@
 					} finally {
 						uni.hideLoading()
 					}
-
-					// const initialLength = drivers.value.length;
-					// drivers.value = drivers.value.filter(driver => (driver.id || driver.phone) !==
-					// 	idOrIndex);
-					// if (drivers.value.length < initialLength) {
-					// 	uni.showToast({
-					// 		title: '删除成功',
-					// 		icon: 'success'
-					// 	});
-					// } else {
-					// 	uni.showToast({
-					// 		title: '未找到匹配项或删除失败',
-					// 		icon: 'none'
-					// 	});
-					// }
-					// TODO: 调用后端API删除
 				}
 			}
 		});

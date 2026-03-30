@@ -146,8 +146,6 @@
 	// 当获取到地图详情时更新数据
 	watch(
 		() => mapOptions.value, (newVal) => {
-			// distance.value = newVal.distance.toFixed(0) || 0
-			// totalMinutes.value = newVal.duration || 0
 			// 处理 option 的结构
 			distance.value = (newVal.distance * 1).toFixed(0) || 0
 			totalMinutes.value = newVal.duration * 1 || 0
@@ -259,10 +257,6 @@
 			}
 			includePoints.value = [parsedPolyline[0].points[0], parsedPolyline[0].points[parsedPolyline[0].points
 				.length - 1]];
-			// includePoints.value = parsedPolyline[0].points
-			// calculateParkingPoints()
-			// console.log(includePoints.value)
-			// const bounds = calculateBounds(parsedPolyline[0].points)
 		} catch (error) {
 			console.error('获取地图详情失败:', error)
 			uni.showToast({
@@ -271,26 +265,6 @@
 			})
 		}
 	}
-
-
-	// const optimizePoints = (points, maxPoints = 20) => {
-	// 	if (points.length <= maxPoints) return points;
-
-	// 	const step = Math.max(1, Math.floor(points.length / maxPoints));
-	// 	const optimized = [];
-
-	// 	// 确保包含起点和终点
-	// 	optimized.push(points[0]);
-
-	// 	// 采样中间点
-	// 	for (let i = 1; i < points.length - 1; i += step) {
-	// 		optimized.push(points[i]);
-	// 	}
-
-	// 	optimized.push(points[points.length - 1]);
-
-	// 	return optimized;
-	// }
 	const calculateParkingPoints = () => {
 
 		console.log('当前车速 speed:', speed.value);
@@ -299,9 +273,6 @@
 			return;
 		}
 		const points = toRaw(mapOptions.value.polyline[0].points);
-
-		// const points = toRaw(point.value)
-		console.log(points)
 		const numPoints = points.length;
 		const minContinuousDrivingTime = 4 * 60; // 4 小时
 		const maxContinuousDrivingTime = 7 * 60; // 7 小时
@@ -341,16 +312,8 @@
 					minContinuousDrivingTime * speed.value / 60;
 			}
 		}
-		console.log('计算得到的停车点 parkingPoints:', parkingPoints);
-		// parkingPoints
-		console.log(markers)
 		markers.value.length = 0
 		markers.value.push(...startandend, ...parkingPoints)
-		// this.setData({
-		// 	markers: [...this.data.markers.slice(0, 5), ...parkingPoints],
-		// 	parkingTimes
-		// });
-		console.log(markers)
 	}
 
 	const calculateDistance = (p1, p2) => {
@@ -493,7 +456,6 @@
 		})
 		getDetail()
 
-		// console.log('uuid', uuidv4())
 
 	})
 </script>

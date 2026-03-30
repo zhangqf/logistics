@@ -440,8 +440,6 @@
 				if (res.confirm) {
 					const idsToDelete = new Set(selectedWaybills.value);
 					const initialLength = drivers.value.length;
-					// drivers.value = drivers.value.filter(driver => !idsToDelete.has(driver.id || driver
-					// 	.phone));
 					console.log(idsToDelete)
 					const r = Array.from(idsToDelete)
 
